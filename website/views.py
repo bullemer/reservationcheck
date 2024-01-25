@@ -6,49 +6,50 @@ from .models import Record
 
 
 def home(request):
-    records = Record.objects.all()
+	records = Record.objects.all()
+	# Check to see if logging in
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
+		user = authenticate(request, username=username, password=password)
+		
+		if user is not None:
+			login(request, user)
+			messages.success(request, "You Have Been Logged In!")
+			return render(request, 'home.html', {'records': records})
+		else:
+			try:
+				customer_record = Record.objects.get(email=username, reservation=password)
+			except:	
+				Record.DoesNotExist
+				customer_record = None
 
-    # Check to see if logging in
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-
-        # Authenticate
-        user = authenticate(request, username=username, password=password)
-
-        # If authentication against the default User model fails, try the additional table
-        if user is None:
-            try:
-                # Use filter instead of get to handle multiple records
-                record = Record.objects.get(email=username, reservation=password)
-            except Record.DoesNotExist:
-                record = None
-
-            if record is not None:
-                # Assuming 'username' and 'password' are fields in the Record model
-                reservation = 4711  # Adjust this based on your actual model structure
-
-             #   login(request, user)
-                messages.success(request, "Reservation found!")
-
-                # Redirect to 'specials' if the user is found in the additional table
-                return redirect('specials',reservation)
-            else:
-                messages.error(request, "There Was An Error Logging In, Please Try Again...")
-                return redirect('home')
-        else:
-            login(request, user)
-            messages.success(request, "You Have Been Logged In!")
-            return redirect('home')
-    else:
-        return render(request, 'home.html', {'records': records})
+		if customer_record is not None:
+			context = {
+			"customer": customer_record
+			}
+			return redirect('specials' ,username = username, password = password)#render (request,'specials.html',{'customer_record':customer_record})
+		else: ## Kein Superuser und keine Reervierung
+			messages.error(request, "There Was An Error Logging In, Please Try Again...")
+			return redirect('home')
+	else:
+		return render(request, 'home.html', {'records': records})
+	
+	
 	
 
-def specials(request):
-	
+
+def specials(request, password, username):
+	try:
+		customer_record = Record.objects.get(email=username, reservation=password)
+		messages.success(request, "found")
+		
+	except:	
+		Record.DoesNotExist
+		customer_record = None
+		messages.success(request, "not found" + password + " " + username)
     # Create a dictionary with the variable
-	context = {'reservation': reservation}
-	return render(request, 'specials.html', context)
+	return render(request, 'specials.html', {'customer_record':customer_record})
 
 
 def logout_user(request):

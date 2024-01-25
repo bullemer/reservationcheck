@@ -1,11 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Special Page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
+
+
     <h1>Welcome to the Special Page!   </h1>
-    <h1> {{ reservation }}   </h1>
-    <!-- Add your special page content here -->
-</body>
-</html>
+    <div class="card">
+        <div class="card-header"><strong>
+              {{ customer_record.first_name }} 
+              {{ customer_record.last_name }}</strong>
+        </div>
+        <div class="card-body">
+      
+      
+      
+      <p class="card-text">
+      <strong>Email: </strong>{{ customer_record.email }}</p>
+      
+      <p class="card-text">
+      <strong>Phone: </strong>{{ customer_record.phone }}
+      </p>
+      
+      <p class="card-text">
+      <strong>organisation: </strong>{{ customer_record.organisation }}</p>
+      
+      <p class="card-text">
+      <strong>City: </strong>{{ customer_record.city }}</p>
+      
+      <p class="card-text">
+      <strong>reservation: </strong>{{ customer_record.reservation }}</p>
+      
+      
+      <p class="card-text">
+      <strong>Create At: </strong>{{ customer_record.created_at }}</p>
+      
+      <p class="card-text">
+      <strong>ID: </strong>{{ customer_record.id }}</p>
+          
+          
+        </div>
+      </div>
+      
+      {% endblock %}
