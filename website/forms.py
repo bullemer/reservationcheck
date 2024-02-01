@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import record
+from .models import Record
 
 
 class SignUpForm(UserCreationForm):
@@ -45,12 +45,14 @@ class AddRecordForm(forms.ModelForm):
 	response_untill = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
 	email = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Email", "class":"form-control"}), label="")
 	phone = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Phone", "class":"form-control"}), label="")
-	reservation = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Reservation", "class":"form-control"}), label="")
 	city = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}), label="")
 	busplan = forms.FileField(label="PDF File", required=False, widget=forms.ClearableFileInput(attrs={"class":"form-control"}))
-	remark = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Remark", "class":"form-control"}), label="")
-
+	remark = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Bemerkung", "class":"form-control"}), label="")
+	
 	class Meta:
-		model = Record
+		model =	Record
 		exclude = ("created_by",)
 		exclude = ("uuid",)
+		fields = '__all__'
+		
+		ordering = ['arrival_date']

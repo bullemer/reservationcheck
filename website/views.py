@@ -132,7 +132,7 @@ def update_record(request, pk):
 	
 	if request.method == 'POST':
 		if request.user.is_authenticated:
-			form = AddRecordForm(request.POST, instance=current_record)
+			form = AddRecordForm(request.POST, request.FILES, instance=current_record)
 		else:
 			# If the user is not logged in, create a form without the user-specific fields
 			template = 'update_record_by_user.html'
