@@ -1,42 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
     <h1>Welcome to the Special Page!   </h1>
-    <div class="card">
-        <div class="card-header"><strong>
-              {{ customer_record.first_name }} 
-              {{ customer_record.last_name }}</strong>
-        </div>
-        <div class="card-body">
-      
-      
-      
-      <p class="card-text">
-      <strong>Email: </strong>{{ customer_record.email }}</p>
-      
-      <p class="card-text">
-      <strong>Phone: </strong>{{ customer_record.phone }}
-      </p>
-      
-      <p class="card-text">
-      <strong>organisation: </strong>{{ customer_record.organisation }}</p>
-      
-      <p class="card-text">
-      <strong>City: </strong>{{ customer_record.city }}</p>
-      
-      <p class="card-text">
-      <strong>reservation: </strong>{{ customer_record.reservation }}</p>
-      
-      
-      <p class="card-text">
-      <strong>Create At: </strong>{{ customer_record.created_at }}</p>
-      
-      <p class="card-text">
-      <strong>ID: </strong>{{ customer_record.id }}</p>
-          
-          
-        </div>
-      </div>
-      
-      {% endblock %}
+
+    {% if customer %}
+    <h1>Client Information</h1>
+    <p>Name: {{ customer.first_name }} {{ customer.last_name }}</p>
+    <p>Email: {{ customer.email }}</p>
+    <p>Phone: {{ customer.phone }}</p>
+    <p>Organisation: {{ customer.organisation }}</p>
+    <p>City: {{ customer.city }}</p>
+      <p>Created at: {{ customer.created_at }}</p>
+    <p>Modified by: {{ customer.modified_by }}</p>
+
+    {% if customer_orders %}
+        <h2>Orders</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                  
+                    <!-- Include other order details as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in customer_orders %}
+                    <tr>
+                        <td>{{ order.phone }}</td>
+                        <td>  <a href="{% url 'update_record' order.id %}" class="btn btn-secondary">Update Record</a></td>
+	
+                        <!-- Include other order details as needed -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No orders found for this client.</p>
+    {% endif %}
+{% else %}
+    <p>Client not found.</p>
+{% endif %}
+
+
+{% endblock %}

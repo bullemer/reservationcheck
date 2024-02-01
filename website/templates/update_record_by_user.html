@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="col-md-6 offset-md-3">
+<h1>Add User Information</h1>
+<br/>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+    
+    <div class="form-group">
+        <label for="{{ form.organisationtype.id_for_label }}">Organisation Type:</label>
+        {% if form.instance.organisationtype %}
+            <input type="text" value="{{ form.instance.get_organisationtype_display }}" readonly>
+        {% else %}
+            {{ form.organisationtype }}
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.organisation.id_for_label }}">Organisation:</label>
+        {% if form.instance.organisation %}
+            <input type="text" value="{{ form.instance.organisation }}" readonly>
+        {% else %}
+            {{ form.organisation }}
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.schoolclass.id_for_label }}">School Class:</label>
+        {{ form.schoolclass }}
+    </div>
+
+    <!-- Repeat the above pattern for other fields -->
+
+ 
+
+ 
+    {% if form.instance.busplan %}
+    <div class="form-group">
+        <label>Bus Plan:</label>
+        <a href="{{ form.instance.busplan.url }}" download="{{ form.instance.busplan.name }}">{{ form.instance.busplan.name }}</a>
+    </div>
+{% endif %}
+
+    <button type="submit" class="btn btn-secondary">Update Record</button>
+</form>
+</div>
+
+{% endblock %}
