@@ -18,16 +18,34 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th>Order ID</th>
-                  
+                    <th scope="col">Arrival Date</th>
+                    <th scope="col">Status</th>
+                     <th scope="col">ausflugspaket</th>
+                    <th scope="col">M  F  M  F</th>
+              
+                    <th scope="col">response_untill</th>
+                    <th scope="col">traveldetail</th>
+              
+              
+                   <th scope="col">Created At</th>
+                   <th scope="col">Modified by</th>
+                    <th scope="col">ID</th>
                     <!-- Include other order details as needed -->
                 </tr>
             </thead>
             <tbody>
                 {% for order in customer_orders %}
                     <tr>
-                        <td>{{ order.phone }}</td>
-                        <td>  <a href="{% url 'update_record' order.id %}" class="btn btn-secondary">Update Record</a></td>
+                        <td>{{ order.arrival_date}}</td>
+                        <td>{{ order.status }}</td>
+                       <td>{{ order.ausflugspaket }}</td>
+                         <td>{{ order.amount_students_male }} {{ record.amount_students_female }} {{ record.amount_organizer_male }} {{ record.amount_organizer_female }}</td>
+                        <td>{{ order.response_untill }}</td>
+                        <td>{{ order.traveldetail }}</td>
+                        <td>{{ order.created_at }}</td>
+                          <td>{{ order.modified_by }}</td>
+                  
+                        <td>  <a href="{% url 'update_record' order.uuid %}" class="btn btn-secondary">Update Record</a></td>
 	
                         <!-- Include other order details as needed -->
                     </tr>

@@ -8,7 +8,7 @@ from .forms import AddRecordForm
 
 
 def home(request):
-	records = Record.objects.all()
+	records = Record.objects.all().order_by('-arrival_date')
 	# Check to see if logging in
 	if request.method == 'POST':
 		username = request.POST['username']
@@ -93,7 +93,7 @@ def register_user(request):
 def customer_record(request, pk):
 	if request.user.is_authenticated:
 		# Look Up Records
-		customer_record = Record.objects.get(id=pk)
+		customer_record = Record.objects.get(uuid=pk)
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
 		messages.success(request, "You Must Be Logged In To View That Page...")
@@ -127,27 +127,44 @@ def add_record(request):
 	
 
 def update_record(request, pk):
-	current_record = Record.objects.get(id=pk)
+	current_record = Record.objects.get(uuid=pk)
 	template = 'update_record.html'
-	
+
 	if request.method == 'POST':
 		if request.user.is_authenticated:
 			form = AddRecordForm(request.POST, request.FILES, instance=current_record)
 		else:
 			# If the user is not logged in, create a form without the user-specific fields
+			#instance = Record(status='ANSWERED')
+			#instance.save()
 			template = 'update_record_by_user.html'
-			form = AddRecordForm(request.POST, instance=current_record)
+			
+			form = AddRecordForm(request.POST, request.FILES, instance=current_record)
+		try:
+			if form.is_valid():
+				form.save()
+				messages.success(request, "Record Has Been Updated!")
+	
+		except ValueError as e:
+				error_message = str(e)
+				messages.error(request, error_message)
+		
+		if template == 'update_record_by_user.html':
+				return redirect('specials' , clientreservation = current_record.pk, clientemail = current_record.email)#render (request,'specials.html',{'customer_record':customer_record})
+		else:
+				return redirect('home')
+	
+		
 
-		if form.is_valid():
-			form.save()
-			messages.success(request, "Record Has Been Updated!")
-			return redirect('home')
 	else:
-        # Handle GET requests separately to display the form
+		# Handle GET requests separately to display the form
 		if request.user.is_authenticated:
 			form = AddRecordForm(instance=current_record)
 		else:
-			template = 'update_record_by_user.html'
-			form = AddRecordForm(instance=current_record)
-	return render(request, template, {'form': form})
+				template = 'update_record_by_user.html'
+				form = AddRecordForm(instance=current_record)
 
+				return render(request, template, {'form': form})
+
+	# Add this line to handle the case where the request method is 'POST'
+	return render(request, template, {'form': form})

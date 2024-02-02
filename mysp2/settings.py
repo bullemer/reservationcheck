@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -106,17 +109,31 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
 
+TIME_ZONE = 'Europe/Berlin'
+
+# Date format for displaying dates
+#DATE_INPUT_FORMATS = ['%d/%m/%Y']
+#DATE_FORMAT = "d/m/Y"
+#USE_L10N = False
+
+# DateTime format for displaying date and time
+#DATETIME_FORMAT = 'd.m.Y H:i:s'
+
+LANGUAGE_CODE = 'en-us'
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -127,10 +144,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # For Deployment
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') # For Deployment
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'mediafiles'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

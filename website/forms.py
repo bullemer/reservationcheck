@@ -53,6 +53,7 @@ class AddRecordForm(forms.ModelForm):
 		model =	Record
 		exclude = ("created_by",)
 		exclude = ("uuid",)
+		exclude = ("status",)
 		fields = '__all__'
 		
 		ordering = ['arrival_date']

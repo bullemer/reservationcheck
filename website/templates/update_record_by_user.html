@@ -1,52 +1,113 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
 <div class="col-md-6 offset-md-3">
-<h1>Add User Information</h1>
-<br/>
+    <div class="card">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h1 class="mb-0">Add Record</h1>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.first_name.id_for_label }}">Field 1:</label>
+                    {{ form.first_name }}
+                </div>
 
-    {{ form.non_field_errors }}
-    
-    <div class="form-group">
-        <label for="{{ form.organisationtype.id_for_label }}">Organisation Type:</label>
-        {% if form.instance.organisationtype %}
-            <input type="text" value="{{ form.instance.get_organisationtype_display }}" readonly>
-        {% else %}
-            {{ form.organisationtype }}
-        {% endif %}
+                <div class="mb-3">
+                    <label for="{{ form.last_name.id_for_label }}">Field 2:</label>
+                    {{ form.last_name }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}">Field 3:</label>
+                    {{ form.email }}
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="{{ form.phone.id_for_label }}">Field 3:</label>
+                    {{ form.phone }}
+                </div>
+
+
+
+                <div class="mb-3">
+                    <label for="{{ form.city.id_for_label }}">Field 3:</label>
+                    {{ form.city }}
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="{{ form.planned_arrival_time.id_for_label }}">Field 3:</label>
+                    {{ form.planned_arrival_time  }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.response_untill.id_for_label }}">Field 3:</label>
+                    {{ form.response_untill  }}
+                </div>
+
+
+
+
+
+                <div class="mb-3">
+                    <label for="{{ form.arrival_date.id_for_label }}">Field 3:</label>
+                    {{ form.arrival_date }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.ausflugspaket.id_for_label }}">Field 3:</label>
+                    {{ form.ausflugspaket }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.amount_students_male.id_for_label }}">Field 3:</label>
+                    {{ form.amount_students_male }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.amount_students_female.id_for_label }}">Field 3:</label>
+                    {{ form.amount_students_female }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.amount_organizer_male.id_for_label }}">Field 3:</label>
+                    {{ form.amount_organizer_male }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.amount_organizer_female.id_for_label }}">Field 3:</label>
+                    {{ form.amount_organizer_female }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.traveldetail.id_for_label }}">Field 3:</label>
+                    {{ form.traveldetail }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.id.id_for_label }}">id:</label>
+                    {{ form.id }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.uuid.id_for_label }}">uuid:</label>
+                    {{ form.uuid }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.uuid.id_for_label }}">uuid</label>
+                    {{ form.uuid }}
+                    <input type="text" name="{{ form.uuid }}" value="{{ form.uuid.value }}" readonly>
+                </div>
+
+
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-secondary">Update Record</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="{{ form.organisation.id_for_label }}">Organisation:</label>
-        {% if form.instance.organisation %}
-            <input type="text" value="{{ form.instance.organisation }}" readonly>
-        {% else %}
-            {{ form.organisation }}
-        {% endif %}
-    </div>
-
-    <div class="form-group">
-        <label for="{{ form.schoolclass.id_for_label }}">School Class:</label>
-        {{ form.schoolclass }}
-    </div>
-
-    <!-- Repeat the above pattern for other fields -->
-
- 
-
- 
-    {% if form.instance.busplan %}
-    <div class="form-group">
-        <label>Bus Plan:</label>
-        <a href="{{ form.instance.busplan.url }}" download="{{ form.instance.busplan.name }}">{{ form.instance.busplan.name }}</a>
-    </div>
-{% endif %}
-
-    <button type="submit" class="btn btn-secondary">Update Record</button>
-</form>
 </div>
 
 {% endblock %}
