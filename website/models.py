@@ -5,11 +5,6 @@ from django.dispatch import receiver
 import uuid
 
 
-class Emailtemplate(models.Model):
-		bezeichnung = models.CharField(null=True, max_length=50)
-		content = models.CharField(null=True, default=None, max_length=800, blank=True)
-		def __str__(self):
-			return(f"{self.bezeichnung}")
 
 class Ausflugspaket(models.Model):
 		bezeichnung = models.CharField(null=True, max_length=50)
@@ -25,9 +20,38 @@ class Subpaket(models.Model):
 		content = models.CharField(null=True, default=None, max_length=800, blank=True)
 
 		def __str__(self):
-			return(f"{self.ausflugspaket} {self.bezeichnung}")
-	
+			return(f" {self.bezeichnung}")
 
+
+class Emailtemplate(models.Model):
+    name = models.CharField(max_length=50, blank=True, null=True, default="none")
+    template = models.TextField(blank=True, null=True, default="")
+
+class EmailLog(models.Model):
+    email_to = models.EmailField()
+    event_type = models.CharField(max_length=255)
+    status = models.CharField(max_length=10, choices=[('Success', 'Success'), ('Error', 'Error')])
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class Email(models.Model):
+
+    from_email = models.EmailField(max_length=200)
+    to_email = models.EmailField(max_length=200)
+    subject = models.CharField(max_length=200)
+    message = models.CharField(max_length=200)
+    file = models.FileField(null=True, upload_to="files/")
+    # send_time = models.DateTimeField(default=datetime.now)
+    send_time = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=200, default="sent")
+    important = models.BooleanField(max_length=10, default=False)
+
+    def __str__(self):
+        return self.subject
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Record(models.Model):
@@ -91,7 +115,7 @@ class Record(models.Model):
 
 
 
-	uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+	uuid = models.UUIDField(default=uuid.uuid4, editable=False, blank=True)
 
 	organisationtype = models.CharField( blank=True,
 		max_length=20,
@@ -99,15 +123,15 @@ class Record(models.Model):
 		default=OPTION_A,  # Set a default value if needed
 		)
 	
-	organisation = models.CharField(blank=True, null=True, max_length=50)
+	organisation = models.CharField(blank=True, default=None, null=True, max_length=50)
 
-	schoolclass = models.CharField(null=True, max_length=50)
+	schoolclass = models.CharField(null=True, max_length=50, blank=True)
 	city =  models.CharField(blank=True, null=True, max_length=50)
 	initals = models.CharField(
 		max_length=20,
 		choices=INITAL_TYP,
 		default=OPTION_ONE,  # Set a default value if needed
-		)
+		blank=True,)
 	first_name = models.CharField(null=True, max_length=50)
 	last_name =  models.CharField(null=True,max_length=50)
 	email =  models.CharField(null=True, max_length=100)
@@ -120,10 +144,6 @@ class Record(models.Model):
 	amount_students_female = models.PositiveIntegerField(null=True, default=None, blank=True)
 	amount_organizer_male = models.PositiveIntegerField(null=True, default=None, blank=True)
 	amount_organizer_female = models.PositiveIntegerField(null=True, default=None, blank=True)
-
-	ausflugspaket = models.ForeignKey(
-	Ausflugspaket, on_delete=models.SET_NULL, blank=True, null=True)
-
 	response_untill = models.DateField(null=True, blank=True)
 
 	traveldetail = models.CharField(
@@ -133,17 +153,22 @@ class Record(models.Model):
 		 blank=True,  # Set a default value if needed
 		)
 	remark =  models.CharField(null=True, max_length=800, blank=True)
+	remark_client =  models.CharField(null=True, max_length=800, blank=True)
 	busplan = models.FileField(upload_to='pdfs/',  null=True, blank=True)
 
 	modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-	created_at = models.DateTimeField(auto_now_add=True)
+	created_at = models.DateTimeField(auto_now_add=True, blank=True)
 	
 	status = models.CharField(
 		max_length=20,
 		choices=STATUS_TYP,
-		default=STATUS_OPEN,  # Set a default value if needed
+		default=STATUS_OPEN,
+  		blank=True,# Set a default value if needed
 		)
-	
+ 
+	ausflugspaket = models.ForeignKey(Ausflugspaket, blank=True, null=True, on_delete=models.CASCADE)
+	subpaket = models.ManyToManyField(to=Subpaket, related_name = "subpakete", blank=True)
+
 	def __str__(self):
 		return(f"{self.first_name} {self.last_name}")
 	
@@ -152,10 +177,3 @@ class Record(models.Model):
 		if not instance.modified_by or instance.modified_by != instance._request_user:
 			instance.modified_by = instance._request_user
 
-
-def save(self, *args, **kwargs):
-	if not self.reservation:
-            # Set a default value if it doesn't exist
-            # You can use any logic here to generate a unique value
-		self.reservation = generate_unique_reservation_value()
-		super().save(*args, **kwargs)

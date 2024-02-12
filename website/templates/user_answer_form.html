@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card mt-5">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h1 class="mb-0">Buchungs Update</h1>
+                    <a href="{% url 'home' %}" class="btn btn-light">Back</a>
+                </div>
+
+
+                {{  record.email }}
+                {{  record.organisation }}
+                {{ record.arrival_date }}
+                {{ record.ausflugspaket.bezeichnung }}
+
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.email.errors }}
+                                <label for="{{ form.email.id_for_label }}">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {{ form.phone.errors }}
+                                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                  
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.arrival_date.errors }}
+                                <label for="{{ form.arrival_date.id_for_label }}">Arrival Date</label>
+                                {{ form.arrival_date }}
+                            </div>
+
+
+                <div class="form-group">
+                    {{ form.planned_arrival_time.errors }}
+                    <label for="{{ form.planned_arrival_time.id_for_label }}">{{ form.planned_arrival_time.label }}</label>
+                    {{ form.planned_arrival_time}}
+                </div>
+                    
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.amount_organizer_male.errors }}
+                                <label for="{{ form.amount_organizer_male.id_for_label }}">Amount of Male Organisers</label>
+                                {{ form.amount_organizer_male }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {{ form.amount_organizer_female.errors }}
+                                <label for="{{ form.amount_organizer_female.id_for_label }}">Amount of Female Organisers</label>
+                                {{ form.amount_organizer_female }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.amount_students_male.errors }}
+                                <label for="{{ form.amount_students_male.id_for_label }}">Amount of Male Students</label>
+                                {{ form.amount_students_male }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                {{ form.amount_students_female.errors }}
+                                <label for="{{ form.amount_students_female.id_for_label }}">Amount of Female Students</label>
+                                {{ form.amount_students_female }}
+                            </div>
+                        </div>
+                   
+                            <div class="form-group col-md-6">
+                                {{ form.subpaket.errors }}
+                                <label for="{{ form.subpaket.id_for_label }}">Subpaket</label>
+                                {{ form.subpaket }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                {{ form.traveldetail.errors }}
+                                <label for="{{ form.traveldetail.id_for_label }}">Travel Detail</label>
+                                {{ form.traveldetail }}
+                            </div>
+                      
+                        </div>
+                        <div class="form-group d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Update Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

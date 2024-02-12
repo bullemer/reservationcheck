@@ -14,13 +14,119 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                {{ form.as_p }}
+                <div class="form-group">
+                    {{ form.first_name.errors }}
+                    <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.last_name.errors }}
+                    <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                    {{ form.last_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.email.errors }}
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    {{ form.phone.errors }}
+                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                    {{ form.phone}}
+                </div>
 
+
+                <div class="form-group">
+                    {{ form.phone.city }}
+                    <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+                    {{ form.city}}
+                </div>
+
+                <div class="form-group">
+                    {{ form.organisation.errors }}
+                    <label for="{{ form.organisation.id_for_label }}">{{ form.organisation.label }}</label>
+                    {{ form.organisation}}
+                </div>
+
+                <div class="form-group">
+                    {{ form.arrival_date.errors }}
+                    <label for="{{ form.arrival_date.id_for_label }}">{{ form.arrival_date.label }}</label>
+                    {{ form.arrival_date}}
+                </div>
+
+                <div class="form-group">
+                    {{ form.response_untill.errors }}
+                    <label for="{{ form.response_untill.id_for_label }}">{{ form.response_untill.label }}</label>
+                    {{ form.response_untill}}
+                </div>
+
+                <div class="form-group">
+                    {{ form.amount_organiser_male.errors }}
+                    <label for="{{ form.amount_organiser_male.id_for_label }}">{{ form.amount_organiser_male.label }}</label>
+                    <input type="number" id="{{ form.amount_organiser_male.id_for_label }}" name="{{ form.amount_organiser_male.html_name }}" value="{{ form.amount_organiser_male.value|default_if_none:'' }}" class="form-control">
+                </div>
+
+
+                <div class="form-group">
+                    {{ form.amount_organiser_female.errors }}
+                    <label for="{{ form.amount_organiser_female.id_for_label }}">{{ form.amount_organiser_female.label }}</label>
+                    <input type="number" id="{{ form.amount_organiser_female.id_for_label }}" name="{{ form.amount_organiser_female.html_name }}" value="{{ form.amount_organiser_female.value|default_if_none:'' }}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    {{ form.amount_students_male.errors }}
+                    <label for="{{ form.amount_student_male.id_for_label }}">{{ form.amount_students_male.label }}</label>
+                    <input type="number" id="{{ form.amount_students_male.id_for_label }}" name="{{ form.amount_students_male.html_name }}" value="{{ form.amount_students_male.value|default_if_none:'' }}" class="form-control">
+                </div>
+
+
+                <div class="form-group">
+                    {{ form.amount_students_female.errors }}
+                    <label for="{{ form.amount_students_female.id_for_label }}">{{ form.amount_students_female.label }}</label>
+                    <input type="number" id="{{ form.amount_students_female.id_for_label }}" name="{{ form.amount_students_female.html_name }}" value="{{ form.amount_students_female.value|default_if_none:'' }}" class="form-control">
+                </div>
+
+
+
+                <div class="form-group">
+                    {{ form.ausflugspaket.errors }}
+                    <label for="{{ form.ausflugspaket.id_for_label }}">{{ form.ausflugspaket.label }}</label>
+                    {{ form.ausflugspaket }}
+                </div>
+
+
+
+                <div class="form-group">
+                    {{ form.traveldetail.errors }}
+                    <label for="{{ form.traveldetail.id_for_label }}">{{ form.traveldetail.label }}</label>
+                    <select id="{{ form.traveldetail.id_for_label }}" name="{{ form.traveldetail.html_name }}" class="form-control">
+                        {% for value, display in form.fields.traveldetail.choices %}
+                            <option value="{{ value }}" {% if form.traveldetail.value == value %}selected{% endif %}>{{ display }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    {{ form.id.errors }}
+                    <label for="{{ form.id.id_for_label }}">{{ form.id.label }}</label>
+                    <input type="text" id="{{ form.id.id_for_label }}" name="{{ form.id.html_name }}" value="{{ form.id.value|default_if_none:'' }}" class="form-control" readonly>
+                </div>
                 <br/>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-secondary">Update Record</button>
+            
+
+
+     
+
+
+
+
+                <div class="form-group d-flex justify-content-end">
+                    <button type="submit" class="btn btn-secondary" value="Submit">Update Record</button>
                 </div>
             </form>
+
+
+
         </div>
     </div>
 </div>

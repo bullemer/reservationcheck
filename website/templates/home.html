@@ -1,104 +1,132 @@
+
+
+
+
 {% extends 'base.html' %}
 
 {% block content %}
 
-
-
 {% if user.is_authenticated %}
 
-
 <style>
-  /* Custom styles for the table */
-  table {
-      font-size: 14px; /* Adjust font size as needed */
-  }
-
-  th, td {
-      text-align: center;
-  }
-
-  thead {
-      background-color: #343a40; /* Table header background color */
-      color: #ffffff; /* Table header text color */
-  }
-
-  tbody tr:hover {
-      background-color: #f8f9fa; /* Table row background color on hover */
-  }
+    table {
+        font-size: 14px; /* Adjust font size as needed */
+    }
+  
+    th, td {
+        text-align: center;
+    }
+  
+    thead {
+        background-color: #343a40; /* Table header background color */
+        color: #ffffff; /* Table header text color */
+    }
+  
+    tbody tr:hover {
+        background-color: #f8f9fa; /* Table row background color on hover */
+    }
 </style>
 
-<table class="table table-striped table-hover table-bordered">
-  <thead class="table-dark">
-      <tr>
-          <th scope="col">Arrival Date</th>
-          <th scope="col">Status</th>
-          <th scope="col">Organisation</th>
-          <th scope="col">City</th>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Phone</th>
-          <th scope="col">Ausflugspaket</th>
-          <th scope="col">M F M F</th>
-          <th scope="col">Response Until</th>
-          <th scope="col">Travel Detail</th>
-          <th scope="col">Created At</th>
-          <th scope="col">Modified by</th>
-          <th scope="col">ID</th>
-      </tr>
-  </thead>
-  <tbody>
-      {% if records %}
-          {% for record in records %}
-              <tr>
-                  <td>{{ record.arrival_date }}</td>
-                  <td>{{ record.status }}</td>
-                  <td>{{ record.organisation }}</td>
-                  <td>{{ record.city }}</td>
-                  <td>{{ record.first_name }} {{ record.last_name }}</td>
-                  <td>{{ record.email }}</td>
-                  <td>{{ record.phone }}</td>
-                  <td>{{ record.ausflugspaket }}</td>
-                  <td>{{ record.amount_students_male }} {{ record.amount_students_female }} {{ record.amount_organizer_male }} {{ record.amount_organizer_female }}</td>
-                  <td>{{ record.response_untill }}</td>
-                  <td>{{ record.traveldetail }}</td>
-                  <td>{{ record.created_at }}</td>
-                  <td>{{ record.modified_by }}</td>
-                  <td><a href="{% url 'record' record.uuid %}" class="btn btn-secondary"> Manage</a>
-                    <a href="{% url 'update_record' record.uuid %}" class="btn btn-secondary">Update</a></td>
-                                     
-                  </td>
-              </tr>
-          {% endfor %}
-      {% endif %}
-  </tbody>
-</table>
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link {% if tab == 'open' %}active{% endif %}" href="{% url 'home' 'open' %}">Open</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if tab == 'close' %}active{% endif %}" href="{% url 'home' 'close' %}">Close</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if tab == 'emaillog' %}active{% endif %}" href="{% url 'home' 'emaillog' %}">Emaillog</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if tab == 'inbox' %}active{% endif %}" href="{% url 'home' 'inbox' %}">Inbox</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show {% if tab == 'open' or tab == 'close' %}active{% endif %}" id="{{ tab }}">
 
 
+      <!-- Your current content goes here -->
+      <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+              <th scope="col">ID </th>
+                <th scope="col">Arrival Date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Organisation</th>
+                <th scope="col">City</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Ausflugspaket</th>
+                <th scope="col">M F M F</th>
+                <th scope="col">Response Until</th>
+                <th scope="col">Travel Detail</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Modified by</th>
+                <th scope="col">ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if records %}
+                {% for record in records %}
+                    <tr>
+                      <td>{{ record.id }}</td>
+                        <td>{{ record.arrival_date }}</td>
+                        <td>{{ record.status }}</td>
+                        <td>{{ record.organisation }}</td>
+                        <td>{{ record.city }}</td>
+                        <td>{{ record.first_name }} {{ record.last_name }}</td>
+                        <td>{{ record.email }}</td>
+                        <td>{{ record.phone }}</td>
+                        <td>{{ record.ausflugspaket }}  {% for subpaket in record.subpaket.all %} {{ subpaket }} {% endfor %} </td>
+                        <td>{{ record.amount_students_male }} {{ record.amount_students_female }} {{ record.amount_organizer_male }} {{ record.amount_organizer_female }}</td>
+                        <td>{{ record.response_untill }}</td>
+                        <td>{{ record.traveldetail }}</td>
+                        <td>{{ record.created_at }}</td>
+                        <td>{{ record.modified_by }}</td>
+                        <td><a href="{% url 'record' record.uuid %}" class="btn btn-secondary"> Manage</a>
+                          <a href="{% url 'update_record' record.uuid %}" class="btn btn-secondary">Update</a></td>
+                                           
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
+    </div>
 
+    <div class="tab-pane fade {% if tab == 'emaillog' %}active{% endif %}" id="emaillog">
+      <!-- Content for the "Emaillog" tab goes here -->
+    </div>
+    <div class="tab-pane fade {% if tab == 'inbox' %}active{% endif %}" id="inbox">
+      <!-- Content for the "Inbox" tab goes here -->
+    </div>
+  </div>
+</div>
 
 
 {% else %}
 
-  <div class="col-md-6 offset-md-3">
-  <h1>Login</h1>
-  <br/>
-
-  <form method="POST" action="{% url 'home' %}">
-    {% csrf_token %}
-
-    <div class="mb-3">
-      <input type="text" class="form-control" name="username", placeholder="Email" required>
-      
-    </div><br/>
-    <div class="mb-3">
-      <input type="text" class="form-control" name="password", placeholder="Reservation Nummer" required>
-    </div>
+<div class="col-md-6 offset-md-3">
+    <h1>Login</h1>
     <br/>
-    <button type="submit" class="btn btn-secondary">Login</button>
-
-  </form>
-
-
+  
+    <form method="POST" action="{% url 'home' %}">
+      {% csrf_token %}
+  
+      <div class="mb-3">
+        <input type="text" class="form-control" name="username", placeholder="Email" required>
+        
+      </div><br/>
+      <div class="mb-3">
+        <input type="text" class="form-control" name="password", placeholder="Reservation Nummer" required>
+      </div>
+      <br/>
+      <button type="submit" class="btn btn-secondary">Login</button>
+  
+    </form>
 
 {% endif %}
 

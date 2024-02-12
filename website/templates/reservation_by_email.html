@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% now "Y-m-d" as todays_date %}
+
+<div class="container mt-5">
+    <h1 class="mb-4">Kunde</h1>
+
+    {% if customer %}
+    <div class="mb-3">
+        <p><strong>Organisation:</strong> {{ customer.organisation }}, {{ customer.city }}</p>
+        <p><strong>Name:</strong> {{ customer.first_name }} {{ customer.last_name }}</p>
+        <p><strong>Contact:</strong> {{ customer.email }}, {{ customer.phone }}</p>
+    </div>
+
+    {% if upcoming_orders %}
+        <h2 class="mt-4">Zukünftige Reisen</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Arrival Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">ausflugspaket</th>
+                    <th scope="col">Subpaket</th>
+                    <th scope="col">M  F  M  F</th>
+                    <th scope="col">response_untill</th>
+                    <th scope="col">traveldetail</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Modified by</th>
+                    <th scope="col">ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in upcoming_orders %}
+                    <tr>
+                        <td>{{ order.arrival_date}}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.ausflugspaket.bezeichnung }}</td>
+                        <td>{{ order.subpaket.id_for_label }}</td>
+                        <td>{{ order.amount_students_male }} {{ order.amount_students_female }} {{ order.amount_organizer_male }} {{ order.amount_organizer_female }}</td>
+                        <td>{{ order.response_untill }}</td>
+                        <td>{{ order.traveldetail }}</td>
+                        <td>{{ order.created_at }}</td>
+                        <td>{{ order.modified_by }}</td>
+                        <td><a href="{% url 'update_record' order.uuid %}" class="btn btn-secondary">Update</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2 class="mt-4">Alte Buchungen</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Arrival Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">ausflugspaket</th>
+                    <th scope="col">Subpaket</th>
+                    <th scope="col">M  F  M  F</th>
+                    <th scope="col">response_untill</th>
+                    <th scope="col">traveldetail</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Modified by</th>
+                    <th scope="col">ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in customer_orders %}
+                    <tr>
+                        <td>{{ order.arrival_date}}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.ausflugspaket.bezeichnung }}</td>
+                        <td>{{ order.subpaket.bezeichnung }}</td>
+                        <td>{{ order.amount_students_male }} {{ order.amount_students_female }} {{ order.amount_organizer_male }} {{ order.amount_organizer_female }}</td>
+                        <td>{{ order.response_untill }}</td>
+                        <td>{{ order.traveldetail }}</td>
+                        <td>{{ order.created_at }}</td>
+                        <td>{{ order.modified_by }}</td>
+                        <td><a href="{% url 'record' order.uuid %}" class="btn btn-secondary">Show</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="mt-4">No orders found for this client.</p>
+    {% endif %}
+{% else %}
+    <p class="mt-4">Client not found.</p>
+{% endif %}
+</div>
+
+{% endblock %}

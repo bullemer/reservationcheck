@@ -1,66 +1,81 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm, AddRecordForm
-from .models import Record
-from .forms import AddRecordForm
+from .forms import SignUpForm, RecordForm, UserAnswerForm
+from .models import Record, Ausflugspaket, Subpaket
+from datetime import timedelta
+from django.utils import timezone
+from .models import Email
+from .forms import EmailForm
+from datetime import datetime
+from datetime import timedelta
 
 
 
-def home(request):
-	records = Record.objects.all().order_by('-arrival_date')
-	# Check to see if logging in
-	if request.method == 'POST':
-		username = request.POST['username']
-		password = request.POST['password']
-		user = authenticate(request, username=username, password=password)
-		
-		if user is not None:
-			login(request, user)
-			messages.success(request, "You Have Been Logged In!")
-			return render(request, 'home.html', {'records': records})
-		else:
-			try:
-				customer_record = None
-				customer_record = Record.objects.get(email=username, id=password)
-			except:	
-				Record.DoesNotExist
-				try:
-					customer_record = Record.objects.get(uuid=username)
-				except:
-					Record.DoesNotExist
-					customer_record = None
 
-		if customer_record is not None:
-			return redirect('specials' , clientreservation = password, clientemail = username)#render (request,'specials.html',{'customer_record':customer_record})
-		else: ## Kein Superuser und keine Reervierung
-			messages.error(request, "There Was An Error Logging In, Please Try Again...")
-			return redirect('home')
+
+
+
+
+def home(request, tab='open'):
+    
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+        if user:
+            login(request, user)
+            messages.success(request, "You Have Been Logged In!")
+            return redirect('home')
+        
+        if Record.objects.filter(email=username, id=password).exists():
+            return redirect('reservation_by_email', clientemail=username)
+        
+        messages.error(request, "There Was An Error Logging In, Please Try Again...")
+        return redirect('home')
+    records = Record.objects.all().order_by('arrival_date')
+    if tab == 'open':
+        records = Record.objects.filter(arrival_date__gte=timezone.now()).order_by('-arrival_date')
+    elif tab == 'close':
+        records = Record.objects.filter(arrival_date__lt=timezone.now()).order_by('-arrival_date')
+
+        #records = Record.objects.all().order_by('arrival_date')
+        
+    context = {
+        'tab': tab,
+        'records': records,
+    }
+        
+    return render(request, 'home.html', context)
+
+
+
+def reservation_by_email(request, clientemail):
+
+	customer = Record.objects.filter(email=clientemail).first()
+ 
+ 	# Get today's date
+	today = timezone.now().date()
+
+# Get tomorrow's date
+	tomorrow = today + timedelta(days=1)
+
+
+	if customer is None:
+		messages.success(request, f"not found {clientemail}")
 	else:
-		return render(request, 'home.html', {'records': records})
-	
-	
-	q = Entry.objects.filter(headline__startswith="What")
+		customer_orders = Record.objects.filter(email=clientemail, arrival_date__lte=tomorrow) # Replace 'orders' with the actual related name
+		upcoming_orders = Record.objects.filter(email=clientemail, arrival_date__gte=tomorrow)
+		ausflugspaket = Ausflugspaket.objects.all()
+		context = {
+			"customer_orders": customer_orders,
+   			"upcoming_orders": upcoming_orders,
+			"customer": customer,
+			"ausflugspaket": ausflugspaket,
+		}
 
-
-def specials(request, clientreservation, clientemail):
-    try:
-        # Use .filter() to get a queryset of matching records
-        customer = Record.objects.filter(email=clientemail, id=clientreservation).first()
-
-        if customer:
-            # Assuming orders are stored within the customer model
-            customer_orders = Record.objects.all()  # Replace 'orders' with the actual related name
-        else:
-            customer_orders = None
-
-    except Record.DoesNotExist:
-        customer = None
-        customer_orders = None
-        messages.success(request, "not found" + clientreservation + " " + clientemail)
-
-    # Create a dictionary with the variables
-    return render(request, 'specials.html', {'customer_orders': customer_orders, 'customer': customer})
+	return render(request, 'reservation_by_email.html', context)
 
 
 
@@ -96,8 +111,9 @@ def customer_record(request, pk):
 		customer_record = Record.objects.get(uuid=pk)
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
-		messages.success(request, "You Must Be Logged In To View That Page...")
-		return redirect('home')
+		customer_record = Record.objects.get(uuid=pk)
+		return render(request, 'record.html', {'customer_record':customer_record})
+
 
 
 
@@ -113,7 +129,7 @@ def delete_record(request, pk):
 
 
 def add_record(request):
-	form = AddRecordForm(request.POST or None)
+	form = RecordForm(request.POST or None)
 	if request.user.is_authenticated:
 		if request.method == "POST":
 			if form.is_valid():
@@ -121,50 +137,118 @@ def add_record(request):
 				messages.success(request, "Record Added...")
 				return redirect('home')
 		return render(request, 'add_record.html', {'form':form})
+
 	else:
-		messages.success(request, "You Must Be Logged In...")
-		return redirect('home')
+			messages.success(request, "You Must Be Logged In...")
+			return redirect('home')
 	
 
 def update_record(request, pk):
+
 	current_record = Record.objects.get(uuid=pk)
-	template = 'update_record.html'
-
+        
 	if request.method == 'POST':
+        #form = RecordForm(request.POST, request.FILES, instance=current_record)
+        
 		if request.user.is_authenticated:
-			form = AddRecordForm(request.POST, request.FILES, instance=current_record)
+				form = RecordForm(request.POST, request.FILES, instance=current_record)
+				template = 'update_record.html' 
 		else:
-			# If the user is not logged in, create a form without the user-specific fields
-			#instance = Record(status='ANSWERED')
-			#instance.save()
-			template = 'update_record_by_user.html'
-			
-			form = AddRecordForm(request.POST, request.FILES, instance=current_record)
-		try:
-			if form.is_valid():
-				form.save()
+				form = UserAnswerForm(request.POST, request.FILES, instance=current_record)
+				template = 'user_answer_form.html'
+       
+		if form.is_valid():
+				#instance.subpaket.set(form.cleaned_data.get('subpaket'))
+				instance = form.save(commit=False)
+				instance.save()
+				form.save()	
+				#instance.subpaket.set(form.cleaned_data.get('subpaket'))
+			# form.save()
 				messages.success(request, "Record Has Been Updated!")
-	
-		except ValueError as e:
-				error_message = str(e)
-				messages.error(request, error_message)
-		
-		if template == 'update_record_by_user.html':
-				return redirect('specials' , clientreservation = current_record.pk, clientemail = current_record.email)#render (request,'specials.html',{'customer_record':customer_record})
+				return redirect('home') if request.user.is_authenticated else redirect('reservation_by_email', clientemail=current_record.email)
 		else:
-				return redirect('home')
-	
-		
+			messages.error(request, form.errors)
 
+
+	if request.user.is_authenticated:
+		form = RecordForm(instance=current_record)
+		template = 'update_record.html' 
+		subpakete = Subpaket.objects.all()
 	else:
-		# Handle GET requests separately to display the form
-		if request.user.is_authenticated:
-			form = AddRecordForm(instance=current_record)
-		else:
-				template = 'update_record_by_user.html'
-				form = AddRecordForm(instance=current_record)
+		ausflugspaket_id = current_record.ausflugspaket.id
+		form = UserAnswerForm(instance=current_record, ausflugspaket_id=ausflugspaket_id)
+		template = 'user_answer_form.html'
+ 
+  
+ 
+	context = {
+        'form': form,
+        'record': current_record,
+     #   'ausflugspaket': Ausflugspaket.objects.all(), 
+     #   'ausflugspaket_id': current_record.ausflugspaket.id,
+    }
+	return render(request, template, context)
 
-				return render(request, template, {'form': form})
 
-	# Add this line to handle the case where the request method is 'POST'
-	return render(request, template, {'form': form})
+def emails_list(request):
+    filter_list = Email.objects.all()
+    if request.GET.get('from_date', ''):
+        from_date = request.GET.get('from_date', '')
+        fd = datetime.strptime(from_date, "%Y-%m-%d").date()
+        filter_list = filter_list.filter(send_time__gte=fd)
+    if request.GET.get('to_date', ''):
+        to_date = request.GET.get('to_date', '')
+        td = datetime.strptime(to_date, "%Y-%m-%d")
+        td = td + timedelta(seconds=(24 * 60 * 60 - 1))
+        filter_list = filter_list.filter(send_time__lte=td)
+    if request.GET.get('name', ''):
+        name = request.GET.get('name', '')
+        filter_list = filter_list.filter(to_email__startswith=name)
+    return render(request, 'mail_all.html', {
+        'filter_list': filter_list})
+
+def email(request):
+    if request.method == "POST":
+        form = EmailForm(request.POST, request.FILES)
+        if form.is_valid():
+            subject = request.POST.get('subject', '')
+            message = request.POST.get('message', '')
+            from_email = request.POST.get('from_email', '')
+            to_email = request.POST.get('to_email', '')
+            file = request.FILES.get('files', None)
+            status = request.POST.get('email_draft', '')
+            email = EmailMessage(subject, message, from_email, [to_email])
+            email.content_subtype = "html"
+            f = form.save()
+            if file is not None:
+                email.attach(file.name, file.read(), file.content_type)
+                f.file = file
+            if status:
+                f.status = "draft"
+            else:
+                email.send(fail_silently=False)
+            f.save()
+            return HttpResponseRedirect(reverse('emails:list'))
+        else:
+            return render(request, 'create_mail.html', {'form': form})
+    else:
+        form = EmailForm()
+        return render(request, 'create_mail.html', {'form': form})
+
+
+def email_sent(request):
+    filter_list = Email.objects.filter(status="sent")
+    if request.GET.get('from_date', ''):
+        from_date = request.GET.get('from_date', '')
+        fd = datetime.strptime(from_date, "%Y-%m-%d").date()
+        filter_list = filter_list.filter(send_time__gte=fd)
+    if request.GET.get('to_date', ''):
+        to_date = request.GET.get('to_date', '')
+        td = datetime.strptime(to_date, "%Y-%m-%d")
+        td = td + timedelta(seconds=(24 * 60 * 60 - 1))
+        filter_list = filter_list.filter(send_time__lte=td)
+    if request.GET.get('name', ''):
+        name = request.GET.get('name', '')
+        filter_list = filter_list.filter(to_email__startswith=name)
+    return render(request, 'mail_sent.html',
+                  {'filter_list': filter_list})
