@@ -1,7 +1,6 @@
+
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 import uuid
 
 
@@ -23,35 +22,6 @@ class Subpaket(models.Model):
 			return(f" {self.bezeichnung}")
 
 
-class Emailtemplate(models.Model):
-    name = models.CharField(max_length=50, blank=True, null=True, default="none")
-    template = models.TextField(blank=True, null=True, default="")
-
-class EmailLog(models.Model):
-    email_to = models.EmailField()
-    event_type = models.CharField(max_length=255)
-    status = models.CharField(max_length=10, choices=[('Success', 'Success'), ('Error', 'Error')])
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-
-class Email(models.Model):
-
-    from_email = models.EmailField(max_length=200)
-    to_email = models.EmailField(max_length=200)
-    subject = models.CharField(max_length=200)
-    message = models.CharField(max_length=200)
-    file = models.FileField(null=True, upload_to="files/")
-    # send_time = models.DateTimeField(default=datetime.now)
-    send_time = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=200, default="sent")
-    important = models.BooleanField(max_length=10, default=False)
-
-    def __str__(self):
-        return self.subject
-
-    class Meta:
-        ordering = ['-id']
 
 
 class Record(models.Model):
@@ -74,7 +44,7 @@ class Record(models.Model):
 	EVENT_A = 'A - Ausflugspaket'
 	EVENT_B = 'B - Ausflugspaket'
 
-	STATUS_OPEN = 'CREATED'
+	STATUS_OPEN = 'UNANSWERED'
 	STATUS_EMAIL = 'EMAIL SEND'
 	STATUS_ANSWERED = 'ANSWERED'
 	STATUS_FINISHED = 'FINISH'
@@ -168,6 +138,7 @@ class Record(models.Model):
  
 	ausflugspaket = models.ForeignKey(Ausflugspaket, blank=True, null=True, on_delete=models.CASCADE)
 	subpaket = models.ManyToManyField(to=Subpaket, related_name = "subpakete", blank=True)
+	vdws_schein = models.BooleanField(default=False)
 
 	def __str__(self):
 		return(f"{self.first_name} {self.last_name}")

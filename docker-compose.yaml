@@ -1,0 +1,32 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE='RESERVATION'
+      - MYSQL_USER='root'
+      - MYSQL_PASSWORD='bigdaddy'
+      - MYSQL_ROOT_PASSWORD='bigdaddy'
+      - MYSQL_HOST='localhost'
+
+    volumes:
+      - /tmp/app/mysqld:/run/mysqld
+      - ./db:/var/lib/mysql   
+
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p$bigdaddy", "-e", "SELECT 1"]
+      timeout: 20s
+      retries: 10
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /tmp/app/mysqld:/run/mysqld
+    depends_on:
+      - db

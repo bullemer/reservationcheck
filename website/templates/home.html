@@ -3,6 +3,7 @@
 
 
 {% extends 'base.html' %}
+{% load my_filters %}
 
 {% block content %}
 
@@ -10,7 +11,8 @@
 
 <style>
     table {
-        font-size: 14px; /* Adjust font size as needed */
+        font-size: 12px; /* Adjust font size as needed */
+        margin-left: -100px;
     }
   
     th, td {
@@ -28,12 +30,12 @@
 </style>
 
 <div class="container">
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs" style="margin-left: -100px;">
     <li class="nav-item">
-      <a class="nav-link {% if tab == 'open' %}active{% endif %}" href="{% url 'home' 'open' %}">Open</a>
+      <a class="nav-link {% if tab == 'open' %}active{% endif %}" href="{% url 'home' 'open' %}">Aktuell</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if tab == 'close' %}active{% endif %}" href="{% url 'home' 'close' %}">Close</a>
+      <a class="nav-link {% if tab == 'close' %}active{% endif %}" href="{% url 'home' 'close' %}">Vergangene</a>
     </li>
     <li class="nav-item">
       <a class="nav-link {% if tab == 'emaillog' %}active{% endif %}" href="{% url 'home' 'emaillog' %}">Emaillog</a>
@@ -42,52 +44,62 @@
       <a class="nav-link {% if tab == 'inbox' %}active{% endif %}" href="{% url 'home' 'inbox' %}">Inbox</a>
     </li>
   </ul>
-
+ 
   <div class="tab-content">
+    
     <div class="tab-pane fade show {% if tab == 'open' or tab == 'close' %}active{% endif %}" id="{{ tab }}">
 
-
+      {% if tab == 'open' or tab == 'close' %}
       <!-- Your current content goes here -->
       <table class="table table-striped table-hover table-bordered">
         <thead class="table-dark">
             <tr>
               <th scope="col">ID </th>
-                <th scope="col">Arrival Date</th>
-                <th scope="col">Status</th>
-                <th scope="col">Organisation</th>
-                <th scope="col">City</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Phone</th>
-                <th scope="col">Ausflugspaket</th>
-                <th scope="col">M F M F</th>
-                <th scope="col">Response Until</th>
-                <th scope="col">Travel Detail</th>
-                <th scope="col">Created At</th>
-                <th scope="col">Modified by</th>
-                <th scope="col">ID</th>
+              <th scope="col">Organisation</th>
+              <th scope="col">Klasse</th>
+              <th scope="col">Ausflugs-<br>paket</th> 
+              <th scope="col">Anzahl Schüler + Begleitung</th>
+              <th scope="col">Anreise</th>
+              <th scope="col">Ansprechpartner</th>
+              <th scope="col">Handy</th>
+              <th scope="col">Schüler männlich</th>
+              <th scope="col">Schüler weiblich</th>
+              <th scope="col">Begl. männlich</th>
+              <th scope="col">Begl. weiblich</th>
+              <th scope="col">VDWS Schein</th>
+              <th scope="col">Weitere Aktivität</th>
+              <th scope="col">Arrival Date</th>
+              <th scope="col">Days to answer</th>
+              <th scope="col">Status</th>
+              <th scope="col">Bemerkung</th>
             </tr>
         </thead>
         <tbody>
             {% if records %}
                 {% for record in records %}
                     <tr>
-                      <td>{{ record.id }}</td>
-                        <td>{{ record.arrival_date }}</td>
-                        <td>{{ record.status }}</td>
-                        <td>{{ record.organisation }}</td>
-                        <td>{{ record.city }}</td>
-                        <td>{{ record.first_name }} {{ record.last_name }}</td>
-                        <td>{{ record.email }}</td>
-                        <td>{{ record.phone }}</td>
-                        <td>{{ record.ausflugspaket }}  {% for subpaket in record.subpaket.all %} {{ subpaket }} {% endfor %} </td>
-                        <td>{{ record.amount_students_male }} {{ record.amount_students_female }} {{ record.amount_organizer_male }} {{ record.amount_organizer_female }}</td>
-                        <td>{{ record.response_untill }}</td>
-                        <td>{{ record.traveldetail }}</td>
-                        <td>{{ record.created_at }}</td>
-                        <td>{{ record.modified_by }}</td>
-                        <td><a href="{% url 'record' record.uuid %}" class="btn btn-secondary"> Manage</a>
-                          <a href="{% url 'update_record' record.uuid %}" class="btn btn-secondary">Update</a></td>
+                      <td>
+                        <a href="{% url 'update_record' record.uuid %}" class="btn btn-outline-success btn-sm">Bearbeiten</a></p> &nbsp;
+                        <a href="{% url 'record' record.uuid %}" class="btn btn-outline-dark btn-sm"> Ansehen</a>
+                          {{ record.id }}</td>
+                      <td>{{ record.organisation }}</td>
+                      <td>{{ record.schoolclass }}</td>
+                      <td>{{ record.ausflugspaket }}   </td>
+                      <td>{{  record.amount_students_male|add:record.amount_students_female }} + {{record.amount_organizer_male|add:record.amount_organizer_female }} = {{ record.amount_organizer_male|add:record.amount_organizer_female|add:record.amount_students_male|add:record.amount_students_female }}  </td>
+                      <td>{{ record.traveldetail }} {{ planned_arrival_time }}</td>
+                      <td>{{ record.first_name }} {{ record.last_name }}</td>
+                      <td>{{ record.phone }}</td>
+                      <td>{{ record.amount_students_male }}</td>
+                      <td>{{ record.amount_students_female }}</td>
+                      <td>{{ record.amount_organizer_male }}</td>
+                      <td>{{ record.amount_organizer_female }}</td>
+                      <td>{{ record.vdws }}</td>
+                      <td>{% for subpaket in record.subpaket.all %} {{ subpaket }} {% endfor %}</td>
+                      <td>{{ record.arrival_date }}</td>
+                      <td class="  {% if record.response_untill|days_until > 0 %}text-success{% else %}text-danger{% endif %}">
+                          {{ record.response_untill }} {{ record.response_untill|days_until }}</td>
+                      <td>{{ record.status }}</td>
+                      <td>{{ record.remark_client }}</td>
                                            
                         </td>
                     </tr>
@@ -96,9 +108,32 @@
         </tbody>
       </table>
     </div>
+    {% endif %}
 
     <div class="tab-pane fade {% if tab == 'emaillog' %}active{% endif %}" id="emaillog">
-      <!-- Content for the "Emaillog" tab goes here -->
+             <!-- Your current content goes here -->
+      <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+              <th scope="col">ID </th>
+                <th scope="col">created</th>
+                <th scope="col">from_email</th>
+                <th scope="col">to</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if records %}
+                {% for record in records %}
+                    <tr>
+                      <td>{{ record.id }}</td>
+                        <td>{{ record.created }}</td>
+                        <td>{{ record.from_email }}</td>
+                        <td>{{ record.to }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
     </div>
     <div class="tab-pane fade {% if tab == 'inbox' %}active{% endif %}" id="inbox">
       <!-- Content for the "Inbox" tab goes here -->

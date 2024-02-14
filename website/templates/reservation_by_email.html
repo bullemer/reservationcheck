@@ -36,7 +36,7 @@
                         <td>{{ order.arrival_date}}</td>
                         <td>{{ order.status }}</td>
                         <td>{{ order.ausflugspaket.bezeichnung }}</td>
-                        <td>{{ order.subpaket.id_for_label }}</td>
+                        <td> {% for subpaket in order.subpaket.all %} {{ subpaket }} {% endfor %}  </td>
                         <td>{{ order.amount_students_male }} {{ order.amount_students_female }} {{ order.amount_organizer_male }} {{ order.amount_organizer_female }}</td>
                         <td>{{ order.response_untill }}</td>
                         <td>{{ order.traveldetail }}</td>
@@ -48,7 +48,7 @@
             </tbody>
         </table>
 
-        <h2 class="mt-4">Alte Buchungen</h2>
+        <h2 class="mt-4">Alle Buchungen</h2>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -70,7 +70,7 @@
                         <td>{{ order.arrival_date}}</td>
                         <td>{{ order.status }}</td>
                         <td>{{ order.ausflugspaket.bezeichnung }}</td>
-                        <td>{{ order.subpaket.bezeichnung }}</td>
+                        <td> {% for subpaket in order.subpaket.all %} {{ subpaket }} {% endfor %} </td>
                         <td>{{ order.amount_students_male }} {{ order.amount_students_female }} {{ order.amount_organizer_male }} {{ order.amount_organizer_female }}</td>
                         <td>{{ order.response_untill }}</td>
                         <td>{{ order.traveldetail }}</td>

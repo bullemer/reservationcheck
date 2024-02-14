@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'website',
+    'post_office',
 ]
 
 MIDDLEWARE = [
@@ -110,13 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-
-USE_I18N = True
-
-USE_TZ = True
-
-TIME_ZONE = 'Europe/Berlin'
-
 # Date format for displaying dates
 #DATE_INPUT_FORMATS = ['%d/%m/%Y']
 #DATE_FORMAT = "d/m/Y"
@@ -125,12 +119,15 @@ TIME_ZONE = 'Europe/Berlin'
 # DateTime format for displaying date and time
 #DATETIME_FORMAT = 'd.m.Y H:i:s'
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'de-de'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True
 
+TIME_ZONE = 'Europe/Berlin'
+
+DATE_FORMAT = 'd.m.Y'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -148,3 +145,18 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') # For Deployment
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+EMAIL_HOST = 'smtp.ionos.de'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'test@san-pepelone.de'
+EMAIL_HOST_PASSWORD = 'HaffDad4Ever!'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+
+
+
+
+EMAIL_BACKEND = 'post_office.EmailBackend'

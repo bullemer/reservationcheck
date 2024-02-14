@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+
+
+
 {% block content %}
 <div class="d-flex justify-content-end mb-3">
   <a href="{% url 'home' %}" class="btn btn-secondary me-2">Back</a>
   <a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger me-2">Delete</a>
+  <a href="{% url 'send_reminder_email' customer_record.uuid %}" class="btn btn-secondary" onclick="askok(event)">Send Reminder</a>
   <a href="{% url 'update_record' customer_record.uuid %}" class="btn btn-secondary">Update Record</a>
 </div>
 
@@ -20,4 +24,32 @@
 </div>
 
 <br/><br/>
+
+
+
+<table class="table table-striped">
+  <thead>
+      <tr>
+          <th>Emails von San Pepelone</th>
+          <!-- Add more headers for other fields -->
+      </tr>
+  </thead>
+  <tbody>
+      {% for email in customer_email %}
+          <tr>
+            <td>{{ email.created }}</td>
+            <td>{{ email.subject }}</td>  
+            <td>{{ email.to }}</td>
+            <td>{{ email.from_email }}</td>
+
+              <!-- Add more cells for other fields -->
+          </tr>
+      {% empty %}
+          <tr>
+              <td colspan="5">No emails found</td>
+          </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
 {% endblock %}

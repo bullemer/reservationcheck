@@ -7,7 +7,7 @@
 <div class="col-md-6 offset-md-3">
     <div class="card">
         <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h1 class="mb-0">Add Record</h1>
+            <h1 class="mb-0">Deine Gruppenreise - Bitte Daten vervollständigen</h1>
             <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
         </div>
         <div class="card-body">
@@ -37,7 +37,7 @@
 
 
                 <div class="form-group">
-                    {{ form.phone.city }}
+                    {{ form.city.errors }}
                     <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
                     {{ form.city}}
                 </div>
@@ -46,6 +46,12 @@
                     {{ form.organisation.errors }}
                     <label for="{{ form.organisation.id_for_label }}">{{ form.organisation.label }}</label>
                     {{ form.organisation}}
+                </div>
+
+                <div class="form-group">
+                    {{ form.schoolclass.errors }}
+                    <label for="{{ form.schoolclass.id_for_label }}">{{ form.schoolclass.label }}</label>
+                    {{ form.schoolclass}}
                 </div>
 
                 <div class="form-group">
@@ -115,11 +121,6 @@
             
 
 
-     
-
-
-
-
                 <div class="form-group d-flex justify-content-end">
                     <button type="submit" class="btn btn-secondary" value="Submit">Update Record</button>
                 </div>
@@ -132,5 +133,6 @@
 </div>
 
 {% endblock %}
+
 
 

@@ -5,13 +5,10 @@ from .forms import SignUpForm, RecordForm, UserAnswerForm
 from .models import Record, Ausflugspaket, Subpaket
 from datetime import timedelta
 from django.utils import timezone
-from .models import Email
-from .forms import EmailForm
 from datetime import datetime
 from datetime import timedelta
-
-
-
+from post_office import mail
+from post_office.models import Email, Log
 
 
 
@@ -36,9 +33,13 @@ def home(request, tab='open'):
         return redirect('home')
     records = Record.objects.all().order_by('arrival_date')
     if tab == 'open':
-        records = Record.objects.filter(arrival_date__gte=timezone.now()).order_by('-arrival_date')
+        records = Record.objects.filter(arrival_date__gte=timezone.now()).order_by('arrival_date')
     elif tab == 'close':
-        records = Record.objects.filter(arrival_date__lt=timezone.now()).order_by('-arrival_date')
+        records = Record.objects.filter(arrival_date__lt=timezone.now()).order_by('arrival_date')
+    elif tab == 'emaillog':
+        records = Email.objects.all()
+
+   
 
         #records = Record.objects.all().order_by('arrival_date')
         
@@ -106,13 +107,20 @@ def register_user(request):
 
 
 def customer_record(request, pk):
+	
+	# Look Up Records
+	customer_record = Record.objects.get(uuid=pk)
+	customer_email = Email.objects.filter(to=customer_record.email)
+  
+	context = {
+			"customer_record":customer_record,
+   			"customer_email": customer_email,
+		}
 	if request.user.is_authenticated:
-		# Look Up Records
-		customer_record = Record.objects.get(uuid=pk)
-		return render(request, 'record.html', {'customer_record':customer_record})
+		return render(request, 'record.html', context)
 	else:
 		customer_record = Record.objects.get(uuid=pk)
-		return render(request, 'record.html', {'customer_record':customer_record})
+		return render(request, 'record_customerview.html', context)
 
 
 
@@ -133,6 +141,7 @@ def add_record(request):
 	if request.user.is_authenticated:
 		if request.method == "POST":
 			if form.is_valid():
+				form.Status = "open"
 				add_record = form.save()
 				messages.success(request, "Record Added...")
 				return redirect('home')
@@ -153,14 +162,16 @@ def update_record(request, pk):
 		if request.user.is_authenticated:
 				form = RecordForm(request.POST, request.FILES, instance=current_record)
 				template = 'update_record.html' 
-		else:
+		else:	
+				# Hier ist der nicht eingeloggte users.
 				form = UserAnswerForm(request.POST, request.FILES, instance=current_record)
 				template = 'user_answer_form.html'
+
        
 		if form.is_valid():
 				#instance.subpaket.set(form.cleaned_data.get('subpaket'))
+			#	if not request.user.is_authenticated: form.Status = "ANSWERED"
 				instance = form.save(commit=False)
-				instance.save()
 				form.save()	
 				#instance.subpaket.set(form.cleaned_data.get('subpaket'))
 			# form.save()
@@ -177,7 +188,11 @@ def update_record(request, pk):
 	else:
 		ausflugspaket_id = current_record.ausflugspaket.id
 		form = UserAnswerForm(instance=current_record, ausflugspaket_id=ausflugspaket_id)
-		template = 'user_answer_form.html'
+		now = datetime.now().date() 
+		days_until = (current_record.arrival_date - now).days	
+		if days_until > 9:template = 'user_answer_form.html'
+		else: template = 'sperre.html'
+		
  
   
  
@@ -190,65 +205,28 @@ def update_record(request, pk):
 	return render(request, template, context)
 
 
-def emails_list(request):
-    filter_list = Email.objects.all()
-    if request.GET.get('from_date', ''):
-        from_date = request.GET.get('from_date', '')
-        fd = datetime.strptime(from_date, "%Y-%m-%d").date()
-        filter_list = filter_list.filter(send_time__gte=fd)
-    if request.GET.get('to_date', ''):
-        to_date = request.GET.get('to_date', '')
-        td = datetime.strptime(to_date, "%Y-%m-%d")
-        td = td + timedelta(seconds=(24 * 60 * 60 - 1))
-        filter_list = filter_list.filter(send_time__lte=td)
-    if request.GET.get('name', ''):
-        name = request.GET.get('name', '')
-        filter_list = filter_list.filter(to_email__startswith=name)
-    return render(request, 'mail_all.html', {
-        'filter_list': filter_list})
+def send_reminder_email(request, pk):
+	if request.user.is_authenticated:
+		# Look Up Records
+		customer_record = Record.objects.get(uuid=pk)
+		link = f"http://127.0.0.1:8000/update_record/"+ str(customer_record.uuid)
+  
+		mail.send(
+    	customer_record.email, # List of email addresses also accepted
+    	'test@san-pepelone.de',
+    	template='schule',
+    	context = {
+			"firstname": customer_record.first_name,
+   			"lastname": customer_record.last_name,
+			"link": link,
+			"email": customer_record.email,
+   			"id": customer_record.id,
+		},
+		priority='now',
+		)
+		messages.success(request, "Reminder Email Sent...")
+		return render(request, 'record.html', {'customer_record':customer_record})
+	else:
+		customer_record = Record.objects.get(uuid=pk)
+		return render(request, 'record.html', {'customer_record':customer_record})
 
-def email(request):
-    if request.method == "POST":
-        form = EmailForm(request.POST, request.FILES)
-        if form.is_valid():
-            subject = request.POST.get('subject', '')
-            message = request.POST.get('message', '')
-            from_email = request.POST.get('from_email', '')
-            to_email = request.POST.get('to_email', '')
-            file = request.FILES.get('files', None)
-            status = request.POST.get('email_draft', '')
-            email = EmailMessage(subject, message, from_email, [to_email])
-            email.content_subtype = "html"
-            f = form.save()
-            if file is not None:
-                email.attach(file.name, file.read(), file.content_type)
-                f.file = file
-            if status:
-                f.status = "draft"
-            else:
-                email.send(fail_silently=False)
-            f.save()
-            return HttpResponseRedirect(reverse('emails:list'))
-        else:
-            return render(request, 'create_mail.html', {'form': form})
-    else:
-        form = EmailForm()
-        return render(request, 'create_mail.html', {'form': form})
-
-
-def email_sent(request):
-    filter_list = Email.objects.filter(status="sent")
-    if request.GET.get('from_date', ''):
-        from_date = request.GET.get('from_date', '')
-        fd = datetime.strptime(from_date, "%Y-%m-%d").date()
-        filter_list = filter_list.filter(send_time__gte=fd)
-    if request.GET.get('to_date', ''):
-        to_date = request.GET.get('to_date', '')
-        td = datetime.strptime(to_date, "%Y-%m-%d")
-        td = td + timedelta(seconds=(24 * 60 * 60 - 1))
-        filter_list = filter_list.filter(send_time__lte=td)
-    if request.GET.get('name', ''):
-        name = request.GET.get('name', '')
-        filter_list = filter_list.filter(to_email__startswith=name)
-    return render(request, 'mail_sent.html',
-                  {'filter_list': filter_list})

@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  mysql_db:
+    container_name: 'mysql_db'
+    image: mysql:8.0
+    restart: always
+    ports:
+      - '3306:3306'
+    env_file: .db.env
+    networks:
+      - db_network
+  mysp2:
+    container_name: mysp2
+    restart: always
+    env_file: .env
+    build: .
+    networks:
+      - db_network
+      - web_network
+    volumes:
+      - ./:/home/carsten/mysp2
+    depends_on:
+      - mysql_db
+  nginx:
+    container_name: nginx
+    restart: always
+    image: "nginx:latest"
+    ports:
+      - "5085:5085"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on: 
+      - mysp2
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
+ 

@@ -1,21 +1,173 @@
 {% extends 'base.html' %}
 {% block content %}
-
 <div class="col-md-6 offset-md-3">
-<h1>Add Reservation</h1>
-<br/>
+    <h1 style="font-weight: 400; font-size: 28px;">Neue Gruppe anlegen</h1>
+    <br/>
 
-<form method="POST" action="{% url 'add_record' %}">
-	{% csrf_token %}
+    <form method="POST" action="{% url 'add_record' %}">
+      
+        <div class="row">
+            <div class="col">
 
-	{{ form.as_p }}
+              <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;">Gruppendaten</h2>
+              <div class="form-group"> 
+                {{ form.organisationtype.errors }}
+                <label for="{{ form.organisationtype.id_for_label }}">{{ form.organisationtype.label }}</label>
+                {{ form.organisationtype}}
+              </div>
+               
+              <div class="form-group">
+                {{ form.organisation.errors }}
+                <label for="{{ form.organisation.id_for_label }}">{{ form.organisation.label }}</label>
+                {{ form.organisation}}
+              </div>
 
-<br/>
-  <button type="submit" class="btn btn-secondary">Add Record</button>
-   <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+              <div class="form-group">
+              {{ form.schoolclass.errors }}
+              <label for="{{ form.schoolclass.id_for_label }}">{{ form.schoolclass.label }}</label>
+              {{ form.schoolclass}}
+              </div>
 
-</form>
+              <div class="form-group">
+              {{ form.city.errors }}
+              <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+              {{ form.city}}
+              </div>
 
+
+      
+      
+    
+                <!-- Repeat for other fields in the first column -->
+            </div>
+
+            <div class="col">
+              <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;">Ansprechpartner:in</h2>
+
+              <div class="form-group">
+                {{ form.initals.errors }}
+                <label for="{{ form.initals.id_for_label }}">{{ form.initals.label }}</label>
+                {{ form.initals }}
+              </div>
+              
+           
+                
+                <div class="form-group">
+                  {{ form.first_name.errors }}
+                  <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                  {{ form.first_name }}
+              </div>
+
+              <div class="form-group">
+                {{ form.last_name.errors }}
+                <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+            </div>
+         
+            <div class="form-group">
+              {{ form.email.errors }}
+              <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+              {{ form.email }}
+          </div>
+          <div class="form-group">
+              {{ form.phone.errors }}
+              <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+              {{ form.phone}}
+          </div>
+
+
+                <!-- Repeat for other fields in the second column -->
+            </div>
+         </div>
+        
+
+        <br></br>
+
+         <div class="row"> 
+          <div class="col">
+            <h2 style="font-weight: 400; font-size: 18px; color:#8e6d45;">Reisebeginn</h2>
+            <div class="form-group">
+              {{ form.arrival_date.errors }}
+              <label for="{{ form.arrival_date.id_for_label }}">{{ form.arrival_date.label }}</label>
+              {{ form.arrival_date}}
+            </div>
+          </div>
+          <div class="col">
+            <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;">Rückmeldung erbeten bis</h2>
+            <div class="form-group">
+              {{ form.response_untill.errors }}
+              <label for="{{ form.response_untill.id_for_label }}">{{ form.response_untill.label }}</label>
+              {{ form.response_untill}}
+            </div>
+          </div>
+        </div>
+
+        <br></br>
+
+        <div class="row"> 
+          <div class="col">
+            <h2 style="font-weight: 400; font-size: 18px;margin-bottom: 15px;color:#8e6d45;">Anreise</h2>
+            <div class="form-group">
+              {{ form.traveldetail.errors }}
+              <label for="{{ form.traveldetail.id_for_label }}">{{ form.traveldetail.label }}</label>
+              <select id="{{ form.traveldetail.id_for_label }}" name="{{ form.traveldetail.html_name }}" class="form-control">
+                  {% for value, display in form.fields.traveldetail.choices %}
+                      <option value="{{ value }}" {% if form.traveldetail.value == value %}selected{% endif %}>{{ display }}</option>
+                  {% endfor %}
+              </select>
+           </div>
+          </div>
+          <div class="col">
+            <h2 style="font-weight: 400; font-size: 18px;margin-bottom: 15px;color:#8e6d45;">Uhrzeit</h2>
+            <div class="form-group">
+              {{ form.planned_arrival_time.errors }}
+              <label for="{{ form.planned_arrival_time.id_for_label }}">{{ form.planned_arrival_time.label }}</label>
+              {{ form.planned_arrival_time}}
+            </div>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="form-group">
+              {{ form.busplan.errors }}
+              <label for="{{ form.busplan.id_for_label }}">{{ form.busplan.label }}</label>
+              {{ form.busplan }}
+            </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top:30px;margin-bottom: -15px;">Ausflugspaket der Gruppe</h2>
+            {{ form.ausflugspaket.errors }}
+            <label for="{{ form.ausflugspaket.id_for_label }}">{{ form.ausflugspaket.label }}</label>
+            {{ form.ausflugspaket }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
+            <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top:30px;margin-bottom: -15px;">Notiz</h2>
+            {{ form.remark.errors }}
+            <label for="{{ form.remark.id_for_label }}">{{ form.remark.label }}</label>
+            {{ form.remark }}
+          </div>
+        </div>
+
+        <br><br>
+
+        <div class="row">
+          
+            <button type="submit" class="btn btn-success">Speichern & anlegen</button>      
+          <a href="{% url 'home' %}" class="btn btn-secondary">Zurück zur Übersicht</a>
+          {% csrf_token %}
+
+        </div>
+
+        </div>
+        <br/><br/><br/><br/>
+
+    </form>
 </div>
-
 {% endblock %}

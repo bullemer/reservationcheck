@@ -17,6 +17,19 @@
 
         /* Add more custom styles as needed */
     </style>
+
+    <script>
+        function askok(e)
+        {
+             if(!confirm('Are you sure you want to send a reminder email?')){
+                  //prevent sending the request when user clicked 'Cancel'
+                  e.preventDefault();
+             }
+        }
+        
+        </script>
+
+        
 </head>
 
 <body>
