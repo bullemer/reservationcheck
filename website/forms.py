@@ -47,23 +47,24 @@ class SignUpForm(UserCreationForm):
 
 # Create Add Record Form
 class RecordForm(forms.ModelForm):
-	organisationtype = forms.ChoiceField(choices=Record.ORGANISATION_TYP, required=False, widget=forms.Select(attrs={"class":"form-control"}), label="")
-	organisation = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Schule/Organisation", "class":"form-control"}), label="")
-	initals = forms.ChoiceField(choices=Record.INITAL_TYP, required=False, widget=forms.Select(attrs={"class":"form-control"}), label="")
+	organisationtype = forms.ChoiceField(choices=Record.ORGANISATION_TYP, required=False, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Art der Gruppe")
+	organisation = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Name der Schule/Organisation", "class":"form-control"}), label="")
+	initals = forms.ChoiceField(choices=Record.INITAL_TYP, required=False, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Anrede")
 	first_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Vorname", "class":"form-control"}), label="")
 	last_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Nachname", "class":"form-control"}), label="")
 	#last_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}), label="")
-	schoolclass = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Klasse", "class":"form-control"}), label="")
-	planned_arrival_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 21) for m in [0, 30]], required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Ankunftszeit")
-	arrival_date = forms.DateField(widget=CustomDateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control'}),label="")
+	schoolclass = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Klasse", "class":"form-control"}), label="")
+	planned_arrival_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 21) for m in [0, 30]], required=True, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Ankunftszeit")
+	planned_departure_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 16) for m in [0, 30]], required=True, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Abreisezeit")
+	arrival_date = forms.DateField( widget=CustomDateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control'}),label="")
 	#arrival_date = forms.DateField(widget=CustomDateInput())
 
  
-	response_untill = forms.DateField(widget=forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date', 'class': 'form-control'}),label="")
+	response_untill = forms.DateField(required=True, widget=forms.DateInput(format=('%Y-%m-%d'), attrs={'type': 'date', 'class': 'form-control'}),label="")
 	email = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"E-Mail", "class":"form-control"}), label="")
 	phone = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Handynummer", "class":"form-control"}), label="")
 	city = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}), label="")
-	busplan = forms.FileField(label="PDF File", required=False, widget=forms.ClearableFileInput(attrs={"class":"form-control"}))
+	busplan = forms.FileField(label="PDF Busauftrag", required=False, widget=forms.ClearableFileInput(attrs={"class":"form-control"}))
 	remark = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Bemerkung", "class":"form-control"}), label="")
 	ausflugspaket = forms.ModelChoiceField(queryset=Ausflugspaket.objects.all(), required=True, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="")
 	subpaket = forms.ModelMultipleChoiceField(queryset=Subpaket.objects.all(), required=False, widget=forms.CheckboxSelectMultiple, label="Subpaket")
@@ -71,8 +72,8 @@ class RecordForm(forms.ModelForm):
 	amount_organizer_male    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Begleiter", "class":"form-control"}), label="Anzahl Begleiter männlich")    
 	amount_organizer_female    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Begleiterinnen", "class":"form-control"}), label="Anzahl Begleiter weiblich")
 	amount_students_female    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Schülerinnen", "class":"form-control"}), label="Anzahl Schüler weiblich")    
-	traveldetail = forms.ChoiceField(choices=Record.TRAVEL_TYP, required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Reisedetails")
-	vdws_schein = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+	traveldetail = forms.ChoiceField(choices=Record.TRAVEL_TYP, required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Anreise via")
+	vdws_schein = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
  
 	class Meta: 
@@ -83,21 +84,27 @@ class RecordForm(forms.ModelForm):
   
   
 class UserAnswerForm(forms.ModelForm):
-	arrival_date = forms.DateField(widget=CustomDateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control'}),label="")
+	arrival_date = forms.DateField(required=False, widget=forms.HiddenInput())
 	email = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Email", "class":"form-control"}), label="")
 	phone = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Phone", "class":"form-control"}), label="")
 	busplan = forms.FileField(label="PDF File", required=False, widget=forms.ClearableFileInput(attrs={"class":"form-control"}))
 	remark_client = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Bemerkung", "class":"form-control"}), label="")
-	ausflugspaket = forms.ModelChoiceField(queryset=Ausflugspaket.objects.all(), required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Ausflugspaket")    
-	planned_arrival_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 21) for m in [0, 30]], required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Ankunftszeit")
-	ausflugspaket = forms.ModelChoiceField(queryset=Ausflugspaket.objects.all(), required=True, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="")
+	ausflugspaket = forms.ModelChoiceField(queryset=Ausflugspaket.objects.all(), widget=forms.Select(attrs={"class":"form-control"}), label="Ausflugspaket")    
+	planned_arrival_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 21) for m in [0, 30]], required=False, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Ankunftszeit")
+	planned_departure_time = forms.ChoiceField( choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 16) for m in [0, 30]], required=False, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Abreisezeit")
+	ausflugspaket = forms.ModelChoiceField(queryset=Ausflugspaket.objects.all(), widget=forms.HiddenInput())
 	subpaket = forms.ModelMultipleChoiceField(Subpaket.objects.none(), required=False, widget=forms.CheckboxSelectMultiple, label="Subpaket")
 	amount_students_male    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Schüler", "class":"form-control"}), label="Anzahl Schüler")
 	amount_organizer_male    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Begleiter", "class":"form-control"}), label="Anzahl Begleiter")    
 	amount_organizer_female    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Begleiterinnen", "class":"form-control"}), label="Anzahl Begleiterinnen")
 	amount_students_female    = forms.IntegerField(required=False, widget=forms.widgets.NumberInput(attrs={"placeholder":"Anzahl Schülerinnen", "class":"form-control"}), label="Anzahl Schülerinnen")    
-	traveldetail = forms.ChoiceField(choices=Record.TRAVEL_TYP, required=False, widget=forms.Select(attrs={"class":"form-control"}), label="Reisedetails")
-	vdws_schein = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+	traveldetail = forms.ChoiceField(choices=Record.TRAVEL_TYP, required=False, widget=forms.Select(attrs={"class":"form-select form-select-sm"}), label="Reisedetails")
+	vdws_schein = forms.BooleanField(required=False, widget=forms.CheckboxInput())
+	organisation = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Schule/Organisation", "class":"form-control"}), label="")
+	first_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Vorname", "class":"form-control"}), label="")
+	last_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Nachname", "class":"form-control"}), label="")
+	schoolclass = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Klasse", "class":"form-control"}), label="")
+
 
  
  
@@ -111,18 +118,18 @@ class UserAnswerForm(forms.ModelForm):
 			self.fields['subpaket'].queryset = Subpaket.objects.all()
 
    
-	def clean_subpaket(self, *args, **kwargs):
-		subpaket = self.cleaned_data.get('subpaket')
+	#def clean_subpaket(self, *args, **kwargs):
+	#	subpaket = self.cleaned_data.get('subpaket')
 		
-		ausflugspaket_id = self.cleaned_data.get('subpaket').first().ausflugspaket.id
+	#	ausflugspaket_id = self.cleaned_data.get('subpaket').first().ausflugspaket.id
   		#Wenn Ausflugspaket 2 ist , darf nur ein Subpaket ausgewählt werden.		
-		if len(subpaket) > 1 and ausflugspaket_id == 2:
-			raise ValidationError("Bei diesem Ausflugspaket darf nur ein Subpaket ausgewählt werden.")
-		return subpaket
+	#	if len(subpaket) > 1 and ausflugspaket_id == 2:
+	#		raise ValidationError("Bei diesem Ausflugspaket darf nur ein Subpaket ausgewählt werden.")
+	#	return subpaket
 
 	class Meta: 	
 		model = Record
 		fields = '__all__'  # include all fields from the Record model
-		exclude = ['organisation', 'city', 'first_name', 'last_name', 'response_untill']
+		exclude = [ 'city', 'response_untill']
 		ordering = ['arrival_date']
   	

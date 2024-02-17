@@ -67,20 +67,13 @@
         <p class="card-text"><strong>Anreise via: </strong>{{ customer_record.traveldetail }}</p>
         <p class="card-text"><strong>Geplante Anreise: </strong>{{ customer_record.planned_arrival_time }}</p>
         <p class="card-text"><strong>Geplante Abreise: </strong>{{ customer_record.planned_departure_time }}</p>
-        <p class="card-text">
-          <strong>PDF Busauftrag: </strong>
-          {% if customer_record.busplan %}
-          <a href="{{ customer_record.busplan.url }}" download>Download</a>
-      {% else %}
-          No file available
-      {% endif %}
-      </p>
+        <p class="card-text"><strong>PDF Busauftrag: </strong>{{ customer_record.busplan }}</p>
       </div>
 
       <div class="col">
         <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;">Auswahl Freizeitangebote</h2>
           <p class="card-text"><strong>Gebuchtes Freizeitpaket </strong>{{ customer_record.ausflugspaket }}</p>
-          <p class="card-text"><strong>Zusatzleistung(en): </strong> {% for subpaket in customer_record.subpaket.all %} {{ subpaket }},  {% endfor %}</p>
+          <p class="card-text"><strong>Zusatzleistung(en): </strong>{{ customer_record.subpaket.all }}</p>
       </div>
 
       <div class="col">

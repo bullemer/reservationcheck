@@ -109,6 +109,7 @@ class Record(models.Model):
 
 	arrival_date = models.DateField(null=True, blank=True)
 	planned_arrival_time = models.CharField(blank=True, default=None, null=True, max_length=5, choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 21) for m in [0, 30]])
+	planned_departure_time = models.CharField(blank=True, default=None, null=True, max_length=5, choices=[(f"{h:02d}:{m:02d}", f"{h:02d}:{m:02d}") for h in range(10, 16) for m in [0, 30]])
 
 	amount_students_male = models.PositiveIntegerField(null=True, default=None, blank=True)
 	amount_students_female = models.PositiveIntegerField(null=True, default=None, blank=True)
@@ -138,7 +139,7 @@ class Record(models.Model):
  
 	ausflugspaket = models.ForeignKey(Ausflugspaket, blank=True, null=True, on_delete=models.CASCADE)
 	subpaket = models.ManyToManyField(to=Subpaket, related_name = "subpakete", blank=True)
-	vdws_schein = models.BooleanField(default=False)
+	vdws_schein = models.BooleanField(default=False,  null=True, blank=True)
 
 	def __str__(self):
 		return(f"{self.first_name} {self.last_name}")

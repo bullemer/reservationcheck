@@ -23,7 +23,7 @@ def home(request, tab='open'):
 
         if user:
             login(request, user)
-            messages.success(request, "You Have Been Logged In!")
+            messages.success(request, "Du bist eingeloggt!")
             return redirect('home')
         
         if Record.objects.filter(email=username, id=password).exists():
@@ -82,7 +82,7 @@ def reservation_by_email(request, clientemail):
 
 def logout_user(request):
 	logout(request)
-	messages.success(request, "You Have Been Logged Out...")
+	messages.success(request, "Du hast dich erfolgreich ausgeloggt!")
 	return redirect('home')
 
 
@@ -145,6 +145,7 @@ def add_record(request):
 				add_record = form.save()
 				messages.success(request, "Record Added...")
 				return redirect('home')
+			else: messages.error(request, form.errors)
 		return render(request, 'add_record.html', {'form':form})
 
 	else:
@@ -175,7 +176,7 @@ def update_record(request, pk):
 				form.save()	
 				#instance.subpaket.set(form.cleaned_data.get('subpaket'))
 			# form.save()
-				messages.success(request, "Record Has Been Updated!")
+				messages.success(request, "Eintrag wurde aktualisiert.")
 				return redirect('home') if request.user.is_authenticated else redirect('reservation_by_email', clientemail=current_record.email)
 		else:
 			messages.error(request, form.errors)
@@ -189,9 +190,10 @@ def update_record(request, pk):
 		ausflugspaket_id = current_record.ausflugspaket.id
 		form = UserAnswerForm(instance=current_record, ausflugspaket_id=ausflugspaket_id)
 		now = datetime.now().date() 
-		days_until = (current_record.arrival_date - now).days	
-		if days_until > 9:template = 'user_answer_form.html'
-		else: template = 'sperre.html'
+		template = 'user_answer_form.html'
+	#	days_until = (current_record.arrival_date - now).days	
+	#	if days_until > 9:template = 'user_answer_form.html'
+	#	else: template = 'sperre.html'
 		
  
   
@@ -224,7 +226,7 @@ def send_reminder_email(request, pk):
 		},
 		priority='now',
 		)
-		messages.success(request, "Reminder Email Sent...")
+		messages.success(request, "E-Mail wurde erfolgreich versendet.")
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
 		customer_record = Record.objects.get(uuid=pk)

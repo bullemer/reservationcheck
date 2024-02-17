@@ -21,7 +21,6 @@
                     <p><strong>Klasse/Gruppe:</strong> {{  record.schoolclass }}</p>
                     <p><strong>Reisebeginn:</strong> {{ record.arrival_date }}</p>
                     <p><strong>Gebuchtes Freizeitpaket: </strong> {{ record.ausflugspaket}}</p>
-                    <strong>PDF Busauftrag: </strong> <a href="">Download</a>
                     </div>
 
                     <div class="col">
@@ -50,7 +49,7 @@
                         {% csrf_token %}
                         <div class="row">
                         <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;">Allgemeine Daten:</h2>
-                        <p></p>
+                        <p>{{ record.ausflugspaket}}</p>
 
                             <div class="form-group col-md-6">
                             {{ form.organisation.errors }}
