@@ -81,12 +81,12 @@
                       <td>
                         <a href="{% url 'update_record' record.uuid %}" class="btn btn-outline-success btn-sm">Bearbeiten</a></p> &nbsp;
                         <a href="{% url 'record' record.uuid %}" class="btn btn-outline-dark btn-sm"> Ansehen</a>
-                          {{ record.id }}</td>
+                      </td>
                       <td>{{ record.organisation }}</td>
                       <td>{{ record.schoolclass }}</td>
                       <td>{{ record.ausflugspaket }}   </td>
-                      <td>{{  record.amount_students_male|add:record.amount_students_female }} + {{record.amount_organizer_male|add:record.amount_organizer_female }} = {{ record.amount_organizer_male|add:record.amount_organizer_female|add:record.amount_students_male|add:record.amount_students_female }}  </td>
-                      <td>{{ record.traveldetail }} {{ planned_arrival_time }}  {{ planned_departure_time}} </td>
+                      <td>{{ record.amount_students_male|add:record.amount_students_female }} + {{record.amount_organizer_male|add:record.amount_organizer_female }} = {{ record.amount_organizer_male|add:record.amount_organizer_female|add:record.amount_students_male|add:record.amount_students_female }}  </td>
+                      <td>{{ record.traveldetail }}  {{ record.planned_arrival_time }}  {{ record.planned_departure_time}} </td>
                       <td>{{ record.first_name }} {{ record.last_name }}</td>
                       <td>{{ record.phone }}</td>
                       <td>{{ record.amount_students_male }}</td>

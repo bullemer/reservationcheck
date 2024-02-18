@@ -5,10 +5,12 @@ from .forms import SignUpForm, RecordForm, UserAnswerForm
 from .models import Record, Ausflugspaket, Subpaket
 from datetime import timedelta
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, date
 from datetime import timedelta
 from post_office import mail
 from post_office.models import Email, Log
+from django.conf import settings
+import os
 
 
 
@@ -181,22 +183,30 @@ def update_record(request, pk):
 		else:
 			messages.error(request, form.errors)
 
+	
 
 	if request.user.is_authenticated:
 		form = RecordForm(instance=current_record)
+		#context.update({form: RecordForm(instance=current_record)})
 		template = 'update_record.html' 
 		subpakete = Subpaket.objects.all()
+		readonly = "False"
 	else:
 		ausflugspaket_id = current_record.ausflugspaket.id
 		form = UserAnswerForm(instance=current_record, ausflugspaket_id=ausflugspaket_id)
-		now = datetime.now().date() 
+		#context.update({form:  UserAnswerForm(instance=current_record, ausflugspaket_id=ausflugspaket_id)})
+		#now = datetime.now().date() 
 		template = 'user_answer_form.html'
-	#	days_until = (current_record.arrival_date - now).days	
-	#	if days_until > 9:template = 'user_answer_form.html'
-	#	else: template = 'sperre.html'
+		readonly = "False"
+		now = datetime.now().date()
+		if isinstance(current_record.arrival_date, date) and isinstance(now, date):
+			days_until = (current_record.arrival_date - now).days
+		else:
+			days_until = 999  # or some default value
 		
- 
-  
+		if days_until < 9: readonly = "True"
+		#context.update({'days_until': days_until, 'readonly': readonly})
+	#	else: template = 'sperre.html'
  
 	context = {
         'form': form,
@@ -204,6 +214,7 @@ def update_record(request, pk):
      #   'ausflugspaket': Ausflugspaket.objects.all(), 
      #   'ausflugspaket_id': current_record.ausflugspaket.id,
     }
+	if readonly==True: context.update({'days_until': days_until, 'readonly': readonly})
 	return render(request, template, context)
 
 
@@ -211,22 +222,56 @@ def send_reminder_email(request, pk):
 	if request.user.is_authenticated:
 		# Look Up Records
 		customer_record = Record.objects.get(uuid=pk)
-		link = f"http://127.0.0.1:8000/update_record/"+ str(customer_record.uuid)
+		link =  request.build_absolute_uri('/') +"update_record/"+ str(customer_record.uuid)
+  
+	# Verschiedene Emails für verschieden Organistationen
+		context = {
+			"firstname": customer_record.first_name,
+   			"lastname": customer_record.last_name,
+			"response_untill": customer_record.response_untill,
+			"link": link,
+			"email": customer_record.email,
+   			"id": customer_record.id,
+		}
+ 
+		if customer_record.organisationtype == "Uni":
+			attachments = {
+			'faq.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'faq.pdf'),
+  			'hausordnung.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'hausordnung.pdf'),
+			'kletterfelsenteilnahme.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'kletterfelsenteilnahme.pdf'),
+			'teilnehmerliste.docx': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'teilnehmerliste.docx'),
+   			'reiseinfos_uni.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'reiseinfos_uni.pdf'),
+
+		}
+		else:
+			attachments = {
+			'elternbrief.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'elternbrief.pdf'),
+			'faq.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'faq.pdf'),
+			'hausordnung.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'hausordnung.pdf'),
+			'kletterfelsenteilnahme.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'kletterfelsenteilnahme.pdf'),
+			'teilnehmerliste.docx': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'teilnehmerliste.docx'),
+		}
+		# Verschiedene Emails für verschieden Ausflugspakete für nicht uni buchungen
+			if  "surf" in str(customer_record.ausflugspaket.bezeichnung.lower()):
+				attachments.update({'reiseinfos1.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'reiseinfos1.pdf'),})
+			else:
+				attachments.update({'reiseinfos2.pdf': os.path.join(settings.BASE_DIR, 'website', 'attachments', 'reiseinfos2.pdf'),})
+    
+		# Send Email
+			if (customer_record.busplan is not None) and customer_record.traveldetail == "San Pepelone Reisebus":
+				attachments.update({'busplan.pdf': customer_record.busplan.path})
+				context.update({'wort_busauftrag': " 6. Busauftrag"})
+
   
 		mail.send(
     	customer_record.email, # List of email addresses also accepted
     	'test@san-pepelone.de',
-    	template='schule',
-    	context = {
-			"firstname": customer_record.first_name,
-   			"lastname": customer_record.last_name,
-			"link": link,
-			"email": customer_record.email,
-   			"id": customer_record.id,
-		},
+    	template='nicht-uni',
+    	context=context,
 		priority='now',
+  		attachments=attachments,
 		)
-		messages.success(request, "E-Mail wurde erfolgreich versendet.")
+		messages.success(request, "E-Mail wurde erfolgreich versendet." + customer_record.ausflugspaket.bezeichnung + str(context) + str(attachments))
 		return render(request, 'record.html', {'customer_record':customer_record})
 	else:
 		customer_record = Record.objects.get(uuid=pk)

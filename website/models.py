@@ -82,15 +82,18 @@ class Record(models.Model):
 		(EVENT_B, 'B - Ausflugspaket'),
 		]
 	
+	
+	
 
 
 
 	uuid = models.UUIDField(default=uuid.uuid4, editable=False, blank=True)
 
 	organisationtype = models.CharField( blank=True,
+		null = True,
 		max_length=20,
 		choices=ORGANISATION_TYP,
-		default=OPTION_A,  # Set a default value if needed
+		default='',  # Set a default value if needed
 		)
 	
 	organisation = models.CharField(blank=True, default=None, null=True, max_length=50)
@@ -120,7 +123,7 @@ class Record(models.Model):
 	traveldetail = models.CharField(
 		max_length=40,
 		choices=TRAVEL_TYP,
-		default=TRAVEL_B, 
+		default=None, 
 		 blank=True,  # Set a default value if needed
 		)
 	remark =  models.CharField(null=True, max_length=800, blank=True)

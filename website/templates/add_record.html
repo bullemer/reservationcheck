@@ -123,6 +123,11 @@
               <label for="{{ form.planned_arrival_time.id_for_label }}">{{ form.planned_arrival_time.label }}</label>
               {{ form.planned_arrival_time}}
             </div>
+            <div class="form-group">
+              {{ form.planned_departure_time.errors }}
+              <label for="{{ form.planned_departure_time.id_for_label }}"></label>
+              {{ form.planned_departure_time}}
+            </div>
           </div>
         </div>
 
@@ -138,7 +143,7 @@
 
         <div class="row">
           <div class="form-group">
-            <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top:30px;margin-bottom: -15px;">Ausflugspaket der Gruppe</h2>
+            <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top:30px;margin-bottom: 15px;">Ausflugspaket der Gruppe</h2>
             {{ form.ausflugspaket.errors }}
             <label for="{{ form.ausflugspaket.id_for_label }}">{{ form.ausflugspaket.label }}</label>
             {{ form.ausflugspaket }}
