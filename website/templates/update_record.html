@@ -213,26 +213,33 @@
                         <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top: 20px;">*Auswahl Freizeitangebote: </h2>
                         </div>
 
-                            <div class="form-group col-md-6">
+
+                            <div class="form-group col-md-14">
                                 {{ form.ausflugspaket.errors }}
                                 <label for="{{ form.ausflugspaket.id_for_label }}"></label>
                                 {{ form.ausflugspaket }}
                             </div>
+ 
+                                <div class="row g-3">
+                                    <div class="col-sm-14">   
+                                        {%if show_vdws == "True" %}
+                                        {{ form.vdws_schein.errors }}
+                                        {{ form.vdws_schein }}  <label for="{{ form.vdws_schein.id_for_label }}">VDWS-Schein</label> 
+                                        {% else %}
+                                        {{ form.vdws_schein.as_hidden }} 
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+
+                           
                    
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-14">
                                 {{ form.subpaket.errors }}
                                 <label for="{{ form.subpaket.id_for_label }}"></label>
                                 {{ form.subpaket }} 
                             </div>
                         
-                        
-                            {% if 'Windsurf' in ausflugspaket %}
-                            <div class="form-check">
-                                {{ form.vdws_schein.label_tag }} {{ form.vdws_schein }}
-                            </div>
-                        {% else %}
-                            {{ form.vdws_schein.as_hidden }}
-                        {% endif %}
 
                         <p></p>
 
@@ -248,7 +255,7 @@
 
                         <p></p>
                         <p></p>
-                        <pbr></br>
+                        <br></br>
                         
 
                         

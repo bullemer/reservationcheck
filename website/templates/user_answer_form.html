@@ -23,22 +23,64 @@
                     <p><strong>Name Schule/ Organisation:</strong> {{  record.organisation }}</p>
                     <p><strong>Klasse/Gruppe:</strong> {{  record.schoolclass }}</p>
                     <p><strong>Reisebeginn:</strong> {{ record.arrival_date }}</p>
+                    <p><strong>PDF Busauftrag:</strong>{% if record.busplan %}
+                        <a href="{{ record.busplan.url }}" download>Download</a>
+                    {% else %}
+                        Kein Busauftrag gebucht
+                    {% endif %}</p>
                     <p><strong>Gebuchtes Freizeitpaket: </strong> {{ record.ausflugspaket}}</p>
-                    <strong>PDF Busauftrag: </strong> <a href="">Download</a>
                     </div>
 
                     <div class="col">
                         <p><strong>Ansprechpartner:in:</strong> {{ record.first_name }} {{ record.last_name }}</p>
                         <p><strong>E-Mail Adresse: </strong> {{  record.email }}</p>
                         <p><strong>Handynummer:</strong> {{ record.phone }}</p>
-                        </div>
-                    
-                    
-                    
-                    
+                    </div>
+                     
                 </div>
+
+                <!--Anfang Infobereich rechtes Popup-Fenster-->
+                <p></p>
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Weitere Infos zum Freizeitpaket</button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                <h5 id="offcanvasRightLabel">San Pepelone Freizeitpakete</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                
+                    <div class="offcanvas-body">
+                        <div class"row">
+                            <div style="font-size: 13px; margin-bottom: 15px; margin-top: -15px;">
+                            Hier findest du die Leistungen, die du für dein jeweiliges Freizeit Paket gebucht hast.
+                            </div>
+                        </div>
+                        <div class"row">
+                            <strong>Windsurf Premium Paket:</strong><p></p>
+                            <div style="margin-left: 30px; font-size: 15px;">
+                            <li>Am Anreisetag bereits 1. Wassereinheit (1-1,5h)</li>
+                            <li>Möglichkeit auf VDWS-Schein</li>
+                            <li>5 Surfkurse + 1 Theorieunterricht</li>
+                            <li>freie Übungszeit an 3 Tagen (1,5 h p.E.)</li>
+                            <li>Theorieunterricht (1h)</li>
+                            </div>
+                        </div>
+                        <p></p>
+                        <div class"row" margin-left:"10px";>
+                            <strong> Wassersport & Freizeit Paket:</strong> <p></p>
+                            <div style="margin-left: 30px; font-size: 15px;">
+                            <li>3 betreute Sporteinheiten </li>
+                            <li>Möglichkeit der Alternative zur Surfkurseinheit</li>
+                            <li>Option kostenpflichtiger Ausflug nach Wismar (ca. 3 Stunden)</li>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--Ende Infobereich rechtes Popup-Fenster-->
             
-            
+                {% if readonly == "False" %}  
+
                 <div class="card mt-5">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Bitte vervollständige deine Gruppendaten bis zum {{ record.response_untill }}  </h5>
@@ -194,36 +236,48 @@
 
                         <p></p>
 
+
                         <div class="row">
-                        <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top: 20px;">Auswahl Freizeitangebote: </h2>
+                        <h2 style="font-weight: 400; font-size: 18px;color:#8e6d45;margin-top: 20px;">Freizeitpaket: </h2>
+                        <p> <strong> Gebuchtes Freizeitpaket:</strong> {{ record.ausflugspaket }}</p>
                         </div>
-                   
-                            <div class="form-group col-md-6">
+                        
+                        <div class="row g-3">
+                            <div class="col-sm-14">   
+                                {%if show_vdws == "True" %}
+                                {{ form.vdws_schein.errors }}
+                                {{ form.vdws_schein }}  <label for="{{ form.vdws_schein.id_for_label }}">VDWS-Schein - Bitte wählen, wenn ein Großteil der Gruppe die VDWS-Lizenz machen möchte. </label> 
+                                {% else %}
+                                {{ form.vdws_schein.as_hidden }} 
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-14">
+                                <h6 style="font-weight: 400;color:#2b2319;margin-top: 20px;margin-bottom: -10px;">Bitte wähle aus einem weiteren Angebot für den freien Tag:</h4>
+                            </div>
+                            <div class="col-sm-14">
                                 {{ form.subpaket.errors }}
                                 <label for="{{ form.subpaket.id_for_label }}"></label>
                                 {{ form.subpaket }} 
                             </div>
-                        
+                            
+                            <!--Hidden fields in template-->
+    
                             <div class="form-group col-md-6">
                                 {{ form.ausflugspaket.errors }}
                                 <label for="{{ form.ausflugspaket.id_for_label }}"></label>
                                 {{ form.ausflugspaket }}
-                            </div>
+                            
 
-                            <div class="form-group col-md-6">
+                         
                                 {{ form.arrival_date.errors }}
                                 <label for="{{ form.arrival_date.id_for_label }}"></label>
                                 {{ form.arrival_date }}
                             </div>
-
-
-                            {% if 'Windsurf' in ausflugspaket %}
-                            <div class="form-check">
-                                {{ form.vdws_schein.label_tag }} {{ form.vdws_schein }}
-                            </div>
-                        {% else %}
-                            {{ form.vdws_schein.as_hidden }}
-                        {% endif %}
+                        </div>
+          
 
                         <p></p>
 
@@ -247,6 +301,20 @@
                     </form>
                 </div>
             </div>
+
+           <!--Dieser Bereich wird angezeigt, wenn das Formular gesperrt wird-->
+            {% else %}
+            <div>
+                <div class="row">
+                    <h2 style="font-weight: 400; font-size: 24px;color:#e82424;margin-top: 30px;">Achtung: Die Aktualisierung der Daten ist nicht mehr möglich, da deine Reise in Kürze beginnt. </h2>
+                </div>
+                <b></p>Bitte wende dich direkt an Swetlana:</p>
+                E-Mail: <a href="mailto:swetlana@san-pepelone.de?subject=Aktualisierung Gruppendaten {{  record.organisation }}">swetlana@san-pepelone.de</a><br>
+                Telefon: 0173  385 44 85</b><br>
+            </div>
+            {% endif %}
+
+
         </div>
     </div>
 </div>

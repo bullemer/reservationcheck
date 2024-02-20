@@ -93,12 +93,20 @@
                       <td>{{ record.amount_students_female }}</td>
                       <td>{{ record.amount_organizer_male }}</td>
                       <td>{{ record.amount_organizer_female }}</td>
-                      <td>{{ record.vdws }}</td>
-                      <td>{% for subpaket in record.subpaket.all %} {{ subpaket }} {% endfor %}</td>
+                      <td>{{ record.vdws_schein|yesno:"Ja," }}</td>
+                      <td>{% for subpaket in record.subpaket.all %} {{ subpaket.bezeichnung|slice:"0:10" }} {% endfor %}</td>
                       <td>{{ record.arrival_date }}</td>
                       <td class="  {% if record.response_untill|days_until > 0 %}text-success{% else %}text-danger{% endif %}">
                           {{ record.response_untill }} {{ record.response_untill|days_until }}</td>
-                      <td>{{ record.status }}</td>
+                      <td>{% if record.status == "ANSWERED" %}
+                        <span class="text-success">{{ record.status }}</span>
+                    {% elif record.status == "UNANSWERED" %}
+                        <span class="text-danger">{{ record.status }}</span>
+                    {% elif record.status == "EMAIL SEND" %}
+                        <span class="text-warning">{{ record.status }}</span>
+                    {% else %}
+                        {{ record.status }}
+                    {% endif %}  {{ record.created_by.username }} </td>
                       <td>{{ record.remark_client }}</td>
                                            
                         </td>

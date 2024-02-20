@@ -19,7 +19,7 @@ class Subpaket(models.Model):
 		content = models.CharField(null=True, default=None, max_length=800, blank=True)
 
 		def __str__(self):
-			return(f" {self.bezeichnung}")
+			return(f" {self.bezeichnung} {self.content}")
 
 
 
@@ -35,6 +35,7 @@ class Record(models.Model):
 	OPTION_C = 'Uni'
 	OPTION_D = 'Projekt'
 
+	TRAVEL_0 = 'bitte wählen'
 	TRAVEL_A = 'San Pepelone Reisebus'
 	TRAVEL_B = 'Eigener Bus'
 	TRAVEL_C = 'Bahn'
@@ -44,14 +45,14 @@ class Record(models.Model):
 	EVENT_A = 'A - Ausflugspaket'
 	EVENT_B = 'B - Ausflugspaket'
 
-	STATUS_OPEN = 'UNANSWERED'
-	STATUS_EMAIL = 'EMAIL SEND'
+	STATUS_UNANSWERED = 'UNANSWERED'
+	STATUS_EMAILSEND = 'EMAIL SEND'
 	STATUS_ANSWERED = 'ANSWERED'
 	STATUS_FINISHED = 'FINISH'
 
 	STATUS_TYP = [
-	(STATUS_OPEN, 'CREATED'),
-	(STATUS_EMAIL, 'EMAIL SEND'),
+	(STATUS_UNANSWERED, 'UNANSWERED'),
+	(STATUS_EMAILSEND, 'EMAIL SEND'),
 	(STATUS_ANSWERED, 'ANSWERED'),
 	(STATUS_FINISHED, 'FINISH'),
 		]
@@ -71,6 +72,7 @@ class Record(models.Model):
     ]	
 	
 	TRAVEL_TYP = [
+     	(TRAVEL_0, 'bitte wählen'),
 		(TRAVEL_A, 'San Pepelone Reisebus'),
 		(TRAVEL_B, 'Eigener Bus'),
 		(TRAVEL_C, 'Bahn'),
@@ -123,7 +125,7 @@ class Record(models.Model):
 	traveldetail = models.CharField(
 		max_length=40,
 		choices=TRAVEL_TYP,
-		default=None, 
+		default=TRAVEL_0, 
 		 blank=True,  # Set a default value if needed
 		)
 	remark =  models.CharField(null=True, max_length=800, blank=True)
@@ -136,14 +138,15 @@ class Record(models.Model):
 	status = models.CharField(
 		max_length=20,
 		choices=STATUS_TYP,
-		default=STATUS_OPEN,
+		default=STATUS_UNANSWERED,
   		blank=True,# Set a default value if needed
 		)
  
 	ausflugspaket = models.ForeignKey(Ausflugspaket, blank=True, null=True, on_delete=models.CASCADE)
 	subpaket = models.ManyToManyField(to=Subpaket, related_name = "subpakete", blank=True)
 	vdws_schein = models.BooleanField(default=False,  null=True, blank=True)
-
+	created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_records')
+ 
 	def __str__(self):
 		return(f"{self.first_name} {self.last_name}")
 	

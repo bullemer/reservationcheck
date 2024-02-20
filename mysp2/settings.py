@@ -153,7 +153,7 @@ EMAIL_HOST_USER = 'test@san-pepelone.de'
 EMAIL_HOST_PASSWORD = 'HaffDad4Ever!'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
+EMAIL_SENDER = 'test@san-pepelone.de'
 
 
 
